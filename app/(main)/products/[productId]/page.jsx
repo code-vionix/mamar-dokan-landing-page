@@ -1,0 +1,972 @@
+"use client";
+import { useEffect, useState, useRef } from "react";
+import { useParams } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Heart,
+  Share2,
+  CheckCircle,
+  ShoppingCart,
+  Truck,
+  RefreshCcw,
+  Award,
+  ChevronDown,
+  ChevronUp,
+  Star,
+  MessageCircle,
+} from "lucide-react";
+
+const producductsDetailspage = () => {
+  const params = useParams();
+  const productId = params.productId;
+
+  // State
+  const [product, setProduct] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [activeImage, setActiveImage] = useState(0);
+  const [activeTab, setActiveTab] = useState("description");
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+  const [showZoom, setShowZoom] = useState(false);
+  const [colorChoice, setColorChoice] = useState("সাদা এবং নীল"); // Default color
+  const imgRef = useRef(null);
+
+  // Load mock product data
+  useEffect(() => {
+    const mockProduct =
+      mockProducts.find((p) => p.id === productId) || mockProducts[0];
+    setProduct(mockProduct);
+  }, [productId]);
+
+  if (!product)
+    return (
+      <div className="container mx-auto px-6 py-24 text-center">
+        <div className="animate-pulse">
+          <div className="h-8 bg-amber-200 rounded w-1/3 mx-auto mb-4"></div>
+          <div className="h-64 bg-amber-100 rounded mb-4"></div>
+          <div className="h-4 bg-amber-100 rounded w-1/2 mx-auto mb-2"></div>
+          <div className="h-4 bg-amber-100 rounded w-1/3 mx-auto"></div>
+        </div>
+      </div>
+    );
+
+  // Handle quantity changes
+  const handleQuantityChange = (newQuantity) => {
+    if (newQuantity >= 1 && newQuantity <= 10) {
+      setQuantity(newQuantity);
+    }
+  };
+
+  // Handle add to cart
+  const handleAddToCart = () => {
+    console.log(`Added ${quantity} of ${product.name} to cart`);
+
+    // Show success message
+    const messageElement = document.getElementById("cart-success-message");
+    if (messageElement) {
+      messageElement.classList.remove("opacity-0");
+      messageElement.classList.add("opacity-100");
+
+      setTimeout(() => {
+        messageElement.classList.remove("opacity-100");
+        messageElement.classList.add("opacity-0");
+      }, 3000);
+    }
+  };
+
+  // Handle wishlist toggle
+  const toggleWishlist = () => {
+    setIsWishlisted(!isWishlisted);
+  };
+
+  // Handle image zoom
+  const handleMouseMove = (e) => {
+    if (!imgRef.current) return;
+
+    const { left, top, width, height } = imgRef.current.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+
+    setZoomPosition({ x, y });
+  };
+
+  // Calculate final price
+  const finalPrice = product.salePrice || product.price;
+  const discount = product.salePrice
+    ? Math.round(((product.price - product.salePrice) / product.price) * 100)
+    : 0;
+
+  return (
+    <div className="bg-amber-50/30 min-h-screen pb-16 mt-12">
+      {/* Breadcrumb */}
+      <div className="bg-amber-100 py-4">
+        <div className="container mx-auto px-4 sm:px-6">
+          <nav className="text-sm font-bengali">
+            <ol className="list-none p-0 inline-flex items-center">
+              <li className="flex items-center">
+                <Link
+                  href="/"
+                  className="text-amber-800 hover:text-amber-600 transition-colors"
+                >
+                  হোম
+                </Link>
+                <svg
+                  className="h-3 w-3 mx-2 text-amber-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </li>
+              <li className="flex items-center">
+                <Link
+                  href="/products"
+                  className="text-amber-800 hover:text-amber-600 transition-colors"
+                >
+                  শাড়ি কালেকশন
+                </Link>
+                <svg
+                  className="h-3 w-3 mx-2 text-amber-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </li>
+              <li className="text-amber-900 font-medium truncate max-w-[200px]">
+                {product.name}
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+
+      {/* Product Section */}
+      <div className="container mx-auto px-4 sm:px-6 py-8">
+        <div className="flex flex-col lg:flex-row -mx-4">
+          {/* Left Column - Gallery */}
+          <div className="lg:w-3/5 px-4">
+            {/* Main image with zoom */}
+            <div
+              ref={imgRef}
+              className="relative h-[500px] mb-4 bg-white rounded-lg overflow-hidden shadow-md cursor-zoom-in"
+              onMouseMove={handleMouseMove}
+              onMouseEnter={() => setShowZoom(true)}
+              onMouseLeave={() => setShowZoom(false)}
+            >
+              <Image
+                src={product.images[activeImage]}
+                alt={product.name}
+                fill
+                className="object-contain"
+                priority
+              />
+
+              {showZoom && (
+                <div
+                  className="absolute inset-0 bg-no-repeat pointer-events-none z-10"
+                  style={{
+                    backgroundImage: `url(${product.images[activeImage]})`,
+                    backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                    backgroundSize: "200%",
+                  }}
+                />
+              )}
+
+              {product.salePrice && (
+                <div className="absolute top-4 left-4 bg-red-500 text-white rounded-full px-3 py-1 text-sm font-bold font-bengali">
+                  {discount}% ছাড়
+                </div>
+              )}
+            </div>
+
+            {/* Thumbnails */}
+            <div className="flex space-x-2 overflow-x-auto pb-4">
+              {product.images.map((img, index) => (
+                <motion.div
+                  key={index}
+                  className={`cursor-pointer border-2 rounded-md overflow-hidden flex-shrink-0 ${
+                    activeImage === index
+                      ? "border-amber-500"
+                      : "border-transparent hover:border-amber-300"
+                  }`}
+                  onClick={() => setActiveImage(index)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <div className="relative h-20 w-20">
+                    <Image
+                      src={img}
+                      alt={`${product.name} ${index + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Additional product images showcase */}
+            <div className="mt-8">
+              <h3 className="font-bengali text-lg font-semibold mb-4 text-gray-800">
+                শাড়ি পরিধান স্টাইল
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="relative h-60 rounded-lg overflow-hidden shadow-sm">
+                  <Image
+                    src="/assets/product-style-1.jpg"
+                    alt="Style Example 1"
+                    fill
+                    className="object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="relative h-60 rounded-lg overflow-hidden shadow-sm">
+                  <Image
+                    src="/assets/product-style-2.jpg"
+                    alt="Style Example 2"
+                    fill
+                    className="object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Info */}
+          <div className="lg:w-2/5 px-4 mt-6 lg:mt-0">
+            {/* Basic Info */}
+            <div>
+              <div className="flex justify-between items-start">
+                <h1 className="text-3xl font-bold text-amber-900 font-bengali mb-2">
+                  {product.name}
+                </h1>
+                <button
+                  onClick={toggleWishlist}
+                  className={`p-2 rounded-full ${
+                    isWishlisted
+                      ? "bg-red-50 text-red-500"
+                      : "bg-gray-100 text-gray-500"
+                  } hover:bg-red-100 transition-colors`}
+                  aria-label="Add to wishlist"
+                >
+                  <Heart
+                    className={`h-5 w-5 ${isWishlisted ? "fill-current" : ""}`}
+                  />
+                </button>
+              </div>
+
+              <div className="flex items-center mb-2">
+                {Array(5)
+                  .fill(0)
+                  .map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`h-4 w-4 ${
+                        i < 4 ? "text-yellow-400 fill-current" : "text-gray-300"
+                      }`}
+                    />
+                  ))}
+                <span className="text-sm text-gray-600 ml-2 font-bengali">
+                  (৪৫ রিভিউ)
+                </span>
+              </div>
+
+              <div className="flex items-end mb-4">
+                {product.salePrice ? (
+                  <>
+                    <span className="text-3xl font-bold text-red-600 font-bengali">
+                      ৳{product.salePrice.toLocaleString()}
+                    </span>
+                    <span className="ml-3 text-lg text-gray-500 line-through font-bengali">
+                      ৳{product.price.toLocaleString()}
+                    </span>
+                    <span className="ml-2 text-sm bg-red-100 text-red-600 px-2 py-1 rounded font-bengali">
+                      {discount}% ছাড়
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-3xl font-bold text-gray-900 font-bengali">
+                    ৳{product.price.toLocaleString()}
+                  </span>
+                )}
+              </div>
+
+              {/* Stock Status */}
+              <div className="flex items-center text-sm mb-4">
+                {product.inStock ? (
+                  <div className="flex items-center text-green-600">
+                    <CheckCircle className="h-4 w-4 mr-1" />
+                    <span className="font-bengali">স্টকে আছে</span>
+                  </div>
+                ) : (
+                  <div className="text-red-500 font-bengali">স্টকে নেই</div>
+                )}
+
+                <div className="h-4 w-px bg-gray-300 mx-3"></div>
+
+                <div className="text-gray-600 font-bengali">
+                  কোড: {product.id}
+                </div>
+              </div>
+            </div>
+
+            {/* Short description */}
+            <p className="text-gray-700 font-bengali mb-6 border-b border-gray-200 pb-6">
+              {product.description}
+            </p>
+
+            {/* Color options */}
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-gray-700 font-bengali mb-2">
+                কালার বাছাই করুন:
+              </h3>
+              <div className="flex space-x-2">
+                {["সাদা এবং নীল", "গোলাপি এবং লাল", "সবুজ এবং কালো"].map(
+                  (color) => (
+                    <button
+                      key={color}
+                      onClick={() => setColorChoice(color)}
+                      className={`px-3 py-1 border rounded-full text-sm font-bengali ${
+                        colorChoice === color
+                          ? "border-amber-500 bg-amber-50 text-amber-800"
+                          : "border-gray-300 text-gray-700 hover:border-amber-300"
+                      }`}
+                    >
+                      {color}
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
+
+            {/* Size Guide */}
+            <div className="mb-6">
+              <button
+                onClick={() => setShowSizeGuide(!showSizeGuide)}
+                className="text-amber-700 underline text-sm font-bengali flex items-center hover:text-amber-800"
+              >
+                <span>শাড়ির সাইজ গাইড দেখুন</span>
+                {showSizeGuide ? (
+                  <ChevronUp className="h-4 w-4 ml-1" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 ml-1" />
+                )}
+              </button>
+
+              <AnimatePresence>
+                {showSizeGuide && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="mt-2 p-4 border border-amber-200 bg-amber-50 rounded-md">
+                      <h4 className="font-semibold mb-2 font-bengali">
+                        স্ট্যান্ডার্ড জামদানি শাড়ি সাইজ
+                      </h4>
+                      <ul className="text-sm font-bengali">
+                        <li>• শাড়ির দৈর্ঘ্য: ৫.৫ মিটার (১৮ ফুট)</li>
+                        <li>• শাড়ির প্রস্থ: ১.২ মিটার (৪৮ ইঞ্চি)</li>
+                      </ul>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Add to cart section */}
+            <div className="mb-6">
+              <div className="flex items-center mb-4">
+                <span className="mr-3 text-gray-700 font-bengali">পরিমাণ:</span>
+                <div className="flex items-center border border-amber-300 rounded-md bg-white">
+                  <button
+                    onClick={() => handleQuantityChange(quantity - 1)}
+                    className="px-3 py-2 text-amber-800 hover:bg-amber-100 transition-colors"
+                    disabled={quantity <= 1}
+                  >
+                    -
+                  </button>
+                  <span className="px-6 py-2 text-gray-800 font-medium border-x border-amber-200">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() => handleQuantityChange(quantity + 1)}
+                    className="px-3 py-2 text-amber-800 hover:bg-amber-100 transition-colors"
+                    disabled={quantity >= 10}
+                  >
+                    +
+                  </button>
+                </div>
+                <div className="ml-4 text-sm text-gray-500 font-bengali">
+                  (অবশিষ্ট: {product.quantity})
+                </div>
+              </div>
+
+              <div className="flex space-x-2">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleAddToCart}
+                  className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-3 px-6 rounded-md font-bengali flex items-center justify-center"
+                >
+                  <ShoppingCart className="h-5 w-5 mr-2" />
+                  <span>কার্টে যোগ করুন</span>
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="p-3 border border-amber-600 text-amber-600 hover:bg-amber-50 rounded-md flex items-center justify-center"
+                  onClick={() => alert("Share functionality coming soon!")}
+                >
+                  <Share2 className="h-5 w-5" />
+                </motion.button>
+              </div>
+
+              <div
+                id="cart-success-message"
+                className="mt-3 bg-green-50 border border-green-200 text-green-700 p-3 rounded-md flex items-center opacity-0 transition-opacity duration-300"
+              >
+                <CheckCircle className="h-5 w-5 mr-2" />
+                <span className="font-bengali text-sm">
+                  পণ্যটি সফলভাবে কার্টে যোগ করা হয়েছে!
+                </span>
+              </div>
+            </div>
+
+            {/* Shipping & Returns */}
+            <div className="space-y-4 border-t border-gray-200 pt-6">
+              <div className="flex">
+                <div className="mr-4 text-amber-700">
+                  <Truck className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 font-bengali text-sm">
+                    বিনামূল্যে শিপিং
+                  </h4>
+                  <p className="text-sm text-gray-600 font-bengali">
+                    ২,০০০ টাকা বা তার বেশি অর্ডারে
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex">
+                <div className="mr-4 text-amber-700">
+                  <RefreshCcw className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 font-bengali text-sm">
+                    ৭ দিনের রিটার্ন পলিসি
+                  </h4>
+                  <p className="text-sm text-gray-600 font-bengali">
+                    কোয়ালিটি ইস্যু থাকলে রিটার্ন করা যাবে
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex">
+                <div className="mr-4 text-amber-700">
+                  <Award className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 font-bengali text-sm">
+                    ১০০% আসল জামদানি
+                  </h4>
+                  <p className="text-sm text-gray-600 font-bengali">
+                    সার্টিফাইড অথেনটিক হ্যান্ডলুম
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs Section */}
+        <div className="mt-16">
+          <div className="border-b border-amber-200">
+            <div className="flex overflow-x-auto scrollbar-hide -mb-px">
+              {["description", "specifications", "reviews", "shipping"].map(
+                (tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-6 py-3 font-bengali font-medium text-sm whitespace-nowrap ${
+                      activeTab === tab
+                        ? "border-b-2 border-amber-500 text-amber-700"
+                        : "text-gray-600 hover:text-amber-600"
+                    }`}
+                  >
+                    {getTabName(tab)}
+                  </button>
+                )
+              )}
+            </div>
+          </div>
+
+          <div className="py-6">
+            {activeTab === "description" && (
+              <div className="prose max-w-none pamber-amber font-bengali">
+                <h3>জামদানি শাড়ির ঐতিহ্য</h3>
+                <p>
+                  বাংলাদেশের জামদানি শাড়ি এক অনন্য ঐতিহ্য, যা শতাব্দীর পর
+                  শতাব্দী ধরে সূক্ষ্ম হাতের কাজের জন্য বিখ্যাত। এই{" "}
+                  {product.name} শাড়িটি পুরোপুরি হাতে বোনা এবং ঐতিহ্যবাহী
+                  পদ্ধতিতে তৈরি করা হয়েছে।
+                </p>
+
+                <p>এই শাড়ির বিশেষ বৈশিষ্ট্য:</p>
+                <ul>
+                  <li>১০০% খাঁটি সুতি দিয়ে বোনা</li>
+                  <li>ঐতিহ্যবাহী {product.pattern} প্যাটার্ন</li>
+                  <li>বিশেষ {product.color} রং সমন্বয়</li>
+                  <li>অত্যন্ত সূক্ষ্ম হাতের কাজ</li>
+                  <li>{product.region} অঞ্চলের দক্ষ তাঁতি দ্বারা নির্মিত</li>
+                </ul>
+
+                <p>
+                  জামদানির সূক্ষ্ম বুনন কৌশল ২০১৩ সালে ইউনেস্কো দ্বারা অমূর্ত
+                  সাংস্কৃতিক ঐতিহ্য হিসেবে স্বীকৃত হয়েছে। এই শাড়িটি বাংলাদেশের
+                  জাতীয় শিল্পকলার একটি অনন্য নিদর্শন, যা পরিধান করে আপনি
+                  বাংলাদেশের ঐতিহ্য এবং সংস্কৃতির অংশ হতে পারবেন।
+                </p>
+
+                <h3>ব্যবহার এবং যত্ন</h3>
+                <p>
+                  জামদানি শাড়ি যত্ন সহকারে হাত দিয়ে ধুয়ে নিতে হবে। শাড়িটি
+                  ছায়ায় শুকাতে দিন এবং কখনই সরাসরি সূর্যালোকে রাখবেন না।
+                  ইস্ত্রি করার সময় হালকা গরম ইস্ত্রি ব্যবহার করুন।
+                </p>
+              </div>
+            )}
+
+            {activeTab === "specifications" && (
+              <div className="font-bengali">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="bg-amber-50 p-6 rounded-lg">
+                    <h3 className="text-lg font-semibold text-amber-800 mb-4">
+                      প্রোডাক্ট স্পেসিফিকেশন
+                    </h3>
+                    <table className="w-full text-sm">
+                      <tbody>
+                        <tr className="border-b border-amber-100">
+                          <td className="py-2 text-gray-600">প্রোডাক্ট টাইপ</td>
+                          <td className="py-2 font-medium text-gray-800">
+                            জামদানি শাড়ি
+                          </td>
+                        </tr>
+                        <tr className="border-b border-amber-100">
+                          <td className="py-2 text-gray-600">উপাদান</td>
+                          <td className="py-2 font-medium text-gray-800">
+                            {product.material}
+                          </td>
+                        </tr>
+                        <tr className="border-b border-amber-100">
+                          <td className="py-2 text-gray-600">কালার</td>
+                          <td className="py-2 font-medium text-gray-800">
+                            {product.color}
+                          </td>
+                        </tr>
+                        <tr className="border-b border-amber-100">
+                          <td className="py-2 text-gray-600">প্যাটার্ন</td>
+                          <td className="py-2 font-medium text-gray-800">
+                            {product.pattern}
+                          </td>
+                        </tr>
+                        <tr className="border-b border-amber-100">
+                          <td className="py-2 text-gray-600">অঞ্চল</td>
+                          <td className="py-2 font-medium text-gray-800">
+                            {product.region}
+                          </td>
+                        </tr>
+                        <tr className="border-b border-amber-100">
+                          <td className="py-2 text-gray-600">শাড়ির দৈর্ঘ্য</td>
+                          <td className="py-2 font-medium text-gray-800">
+                            ৫.৫ মিটার (১৮ ফুট)
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 text-gray-600">শাড়ির প্রস্থ</td>
+                          <td className="py-2 font-medium text-gray-800">
+                            ১.২ মিটার (৪৮ ইঞ্চি)
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="bg-amber-50 p-6 rounded-lg">
+                    <h3 className="text-lg font-semibold text-amber-800 mb-4">
+                      প্যাকেজিং এবং ডেলিভারি
+                    </h3>
+                    <table className="w-full text-sm">
+                      <tbody>
+                        <tr className="border-b border-amber-100">
+                          <td className="py-2 text-gray-600">প্যাকেজিং</td>
+                          <td className="py-2 font-medium text-gray-800">
+                            প্রিমিয়াম গিফট বক্স
+                          </td>
+                        </tr>
+                        <tr className="border-b border-amber-100">
+                          <td className="py-2 text-gray-600">শিপিং সময়</td>
+                          <td className="py-2 font-medium text-gray-800">
+                            ঢাকায় ২-৩ দিন, ঢাকার বাইরে ৪-৭ দিন
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 text-gray-600">প্রসেসিং সময়</td>
+                          <td className="py-2 font-medium text-gray-800">
+                            ২৪ ঘণ্টা
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <h3 className="text-lg font-semibold text-amber-800 mt-6 mb-4">
+                      রিটার্ন পলিসি
+                    </h3>
+                    <ul className="list-disc pl-4 text-sm space-y-1 text-gray-700">
+                      <li>ডেলিভারির ৭ দিনের মধ্যে রিটার্ন করা যাবে</li>
+                      <li>প্রোডাক্টে কোয়ালিটি ইস্যু থাকতে হবে</li>
+                      <li>প্রোডাক্ট অক্ষত অবস্থায় থাকতে হবে</li>
+                      <li>অরিজিনাল প্যাকেজিংসহ রিটার্ন করতে হবে</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "reviews" && (
+              <div className="font-bengali">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+                  <div className="mb-4 md:mb-0">
+                    <h3 className="text-xl font-semibold text-gray-900">
+                      গ্রাহক রিভিউ
+                    </h3>
+                    <div className="flex items-center">
+                      <div className="flex">
+                        {Array(5)
+                          .fill(0)
+                          .map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-5 w-5 ${
+                                i < 4
+                                  ? "text-yellow-400 fill-current"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                      </div>
+                      <p className="ml-2 text-sm text-gray-700">
+                        ৪.০ আউট অফ ৫ (৪৫ রিভিউ)
+                      </p>
+                    </div>
+                  </div>
+                  <button className="bg-amber-600 hover:bg-amber-700 text-white py-2 px-4 rounded-md flex items-center">
+                    <MessageCircle className="h-5 w-5 mr-2" />
+                    <span>রিভিউ লিখুন</span>
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  {reviews.map((review, idx) => (
+                    <div
+                      key={idx}
+                      className="border-b border-gray-200 pb-6 last:border-b-0"
+                    >
+                      <div className="flex items-center mb-2">
+                        <div className="flex mr-2">
+                          {Array(5)
+                            .fill(0)
+                            .map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-4 w-4 ${
+                                  i < review.rating
+                                    ? "text-yellow-400 fill-current"
+                                    : "text-gray-300"
+                                }`}
+                              />
+                            ))}
+                        </div>
+                        <span className="font-medium">{review.name}</span>
+                        <span className="mx-2 text-gray-400">•</span>
+                        <span className="text-sm text-gray-500">
+                          {review.date}
+                        </span>
+                      </div>
+                      <h4 className="font-semibold mb-2">{review.title}</h4>
+                      <p className="text-gray-600">{review.comment}</p>
+
+                      {review.images && (
+                        <div className="flex space-x-2 mt-3">
+                          {review.images.map((img, imgIdx) => (
+                            <div
+                              key={imgIdx}
+                              className="relative h-16 w-16 border rounded overflow-hidden"
+                            >
+                              <Image
+                                src={img}
+                                alt={`Review image ${imgIdx + 1}`}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 flex justify-center">
+                  <button className="border border-amber-600 text-amber-600 hover:bg-amber-50 rounded-md py-2 px-4 flex items-center">
+                    আরও রিভিউ দেখুন
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "shipping" && (
+              <div className="prose max-w-none pamber-amber font-bengali">
+                <h3>শিপিং এবং ডেলিভারি</h3>
+                <p>
+                  আমরা বাংলাদেশের সব জেলায় শিপিং সুবিধা প্রদান করি। শিপিংয়ের
+                  সময় নির্ভর করে আপনার অবস্থানের উপর:
+                </p>
+
+                <ul>
+                  <li>
+                    <strong>ঢাকা সিটি:</strong> ২৪-৪৮ ঘণ্টা
+                  </li>
+                  <li>
+                    <strong>ঢাকার আশেপাশে:</strong> ২-৩ দিন
+                  </li>
+                  <li>
+                    <strong>অন্যান্য জেলা:</strong> ৪-৭ দিন
+                  </li>
+                </ul>
+
+                <h3>শিপিং চার্জ</h3>
+                <ul>
+                  <li>
+                    <strong>ঢাকা সিটি:</strong> ৬০ টাকা
+                  </li>
+                  <li>
+                    <strong>ঢাকার বাইরে:</strong> ১০০-১৫০ টাকা (লোকেশন অনুযায়ী)
+                  </li>
+                  <li>
+                    <strong>২,০০০ টাকা বা তার বেশি অর্ডারে:</strong> বিনামূল্যে
+                    শিপিং
+                  </li>
+                </ul>
+
+                <h3>পেমেন্ট পদ্ধতি</h3>
+                <p>আমরা নিম্নলিখিত পেমেন্ট পদ্ধতিগুলি গ্রহণ করি:</p>
+                <ul>
+                  <li>ক্যাশ অন ডেলিভারি (COD)</li>
+                  <li>বিকাশ</li>
+                  <li>নগদ</li>
+                  <li>ক্রেডিট/ডেবিট কার্ড</li>
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Related Products */}
+        <div className="mt-16">
+          <h2 className="text-2xl font-bold text-amber-900 font-bengali mb-6">
+            আপনার পছন্দের জন্য আরও শাড়ি
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {relatedProducts.map((item) => (
+              <Link
+                href={`/products/${item.id}`}
+                key={item.id}
+                className="group"
+              >
+                <div className="relative rounded-lg overflow-hidden bg-white shadow-sm">
+                  <div className="aspect-w-3 aspect-h-4 relative">
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    {item.salePrice && (
+                      <div className="absolute top-2 right-2 bg-red-500 text-white rounded-full px-2 py-1 text-xs font-bold">
+                        ছাড়
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <h3 className="font-medium text-amber-900 font-bengali truncate">
+                      {item.name}
+                    </h3>
+                    <div className="flex items-center mt-1">
+                      {item.salePrice ? (
+                        <>
+                          <span className="text-red-600 font-semibold">
+                            ৳{item.salePrice}
+                          </span>
+                          <span className="text-gray-400 line-through text-sm ml-2">
+                            ৳{item.price}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="font-semibold">৳{item.price}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Helper function to get tab name in Bangla
+function getTabName(tab) {
+  const tabNames = {
+    description: "বিবরণ",
+    specifications: "স্পেসিফিকেশন",
+    reviews: "রিভিউ",
+    shipping: "শিপিং এবং রিটার্ন",
+  };
+
+  return tabNames[tab] || tab;
+}
+
+export default producductsDetailspage;
+
+// Mock data
+const mockProducts = [
+  {
+    id: "1",
+    name: "শাহী জামদানি শাড়ি",
+    description:
+      "নীল পাড়ের সাথে সাদা শাড়ি। বিশেষ কারুকার্য সহ, হাতে বুনা জামদানি শাড়ি যা ঐতিহ্যবাহী বাংলাদেশী শিল্পের একটি উৎকৃষ্ট নিদর্শন।",
+    price: 15500,
+    images: [
+      "/assets/product-1.jpg",
+      "/assets/product-1.jpg",
+      "/assets/product-1.jpg",
+    ],
+    material: "সুতি",
+    color: "সাদা এবং নীল",
+    pattern: "জামদানি বুটি",
+    region: "ঢাকা",
+    inStock: true,
+    quantity: 5,
+  },
+  {
+    id: "2",
+    name: "ফুলবুটি জামদানি",
+    description:
+      "লাল পাড়ের সাথে গোলাপি শাড়ি। অত্যন্ত সূক্ষ্ম হাতের কাজের জামদানি শাড়ি, যেখানে ছোট ফুলের নকশা বুনা হয়েছে।",
+    price: 12800,
+    salePrice: 10900,
+    images: [
+      "/assets/product-2.jpg",
+      "/assets/product-2.jpg",
+      "/assets/product-2.jpg",
+    ],
+    material: "সুতি",
+    color: "গোলাপি এবং লাল",
+    pattern: "ফুলবুটি",
+    region: "নরসিংদী",
+    inStock: true,
+    quantity: 8,
+  },
+  {
+    id: "3",
+    name: "কাটারি জামদানি শাড়ি",
+    description:
+      "কালো পাড়ের সাথে সবুজ শাড়ি। বিশেষ কাটারি নকশা বুনানো হয়েছে এই অনন্য শাড়িতে, যা বাংলার ঐতিহ্যকে তুলে ধরে।",
+    price: 18200,
+    images: [
+      "/assets/product-3.jpg",
+      "/assets/product-3.jpg",
+      "/assets/product-3.jpg",
+    ],
+    material: "সুতি",
+    color: "সবুজ এবং কালো",
+    pattern: "কাটারি বুটি",
+    region: "ঢাকা",
+    inStock: true,
+    quantity: 3,
+  },
+];
+
+const reviews = [
+  {
+    name: "রুমানা আক্তার",
+    rating: 5,
+    date: "৫ মার্চ, ২০২৩",
+    title: "অসাধারণ কোয়ালিটি!",
+    comment:
+      "শাড়িটি অসাধারণ! কোয়ালিটি এবং ডিজাইন দুটোই চমৎকার। আমার বিয়ের অনুষ্ঠানে পরেছিলাম এবং সবাই শাড়ির প্রশংসা করেছিল।",
+    images: ["/assets/review-1.jpg", "/assets/review-2.jpg"],
+  },
+  {
+    name: "তানিয়া রহমান",
+    rating: 4,
+    date: "১২ ফেব্রুয়ারি, ২০২৩",
+    title: "সুন্দর ডিজাইন",
+    comment:
+      "খুব সুন্দর জামদানি শাড়ি, তবে রঙটি ছবির চেয়ে একটু ভিন্ন। তবে মানের দিক দিয়ে খুবই ভালো।",
+  },
+  {
+    name: "আসিফ আহমেদ",
+    rating: 5,
+    date: "২২ জানুয়ারি, ২০২৩",
+    title: "আমার স্ত্রীর জন্য একটি দুর্দান্ত উপহার",
+    comment:
+      "আমি আমার স্ত্রীর জন্মদিনে এই শাড়ি উপহার দিয়েছিলাম। তিনি এটি পেয়ে খুব খুশি হয়েছেন। প্যাকেজিং এবং ডেলিভারি সার্ভিস খুব ভালো ছিল।",
+  },
+];
+
+const relatedProducts = [
+  {
+    id: "2",
+    name: "ফুলবুটি জামদানি",
+    price: "12,800",
+    salePrice: "10,900",
+    image: "/assets/product-2.jpg",
+  },
+  {
+    id: "3",
+    name: "কাটারি জামদানি শাড়ি",
+    price: "18,200",
+    image: "/assets/product-3.jpg",
+  },
+  {
+    id: "4",
+    name: "তারা জামদানি শাড়ি",
+    price: "22,500",
+    image: "/assets/product-4.jpg",
+  },
+  {
+    id: "1",
+    name: "নীল জামদানি",
+    price: "15,500",
+    image: "/assets/product-1.jpg",
+  },
+];
