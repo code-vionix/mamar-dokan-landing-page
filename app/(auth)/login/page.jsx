@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { useForm } from "react-hook-form"
+import { signIn } from "next-auth/react"
+
 import InputField from "./components/InputField"
 import SubmitButton from "./components/SubmitButton"
 import Divider from "./components/Divider"
@@ -15,10 +17,17 @@ const LoginPage = () => {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm()
 
   const onSubmit = async (data) => {
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    localStorage.setItem("userToken", "demo-token")
-    localStorage.setItem("userEmail", data.email)
-    router.push("/")
+    const res = await signIn("credentials", {
+      redirect: false,
+      email: data.email,
+      password: data.password,
+    });
+
+    if (res?.error) {
+      alert("লগইন ব্যর্থ: " + res.error);
+    } else {
+      router.push("/");
+    }
   }
 
   return (
