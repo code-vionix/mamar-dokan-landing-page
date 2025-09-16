@@ -47,7 +47,7 @@ const Breadcrumb = async ({ productId }) => {
               </svg>
             </li>
             <li className="text-amber-900 font-medium truncate max-w-[200px]">
-              {product.name}
+              {product?.name}
             </li>
           </ol>
         </nav>
