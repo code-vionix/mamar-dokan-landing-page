@@ -1,0 +1,54 @@
+[
+  {
+    "id": "1",
+    "name": "শাহী জামদানি শাড়ি",
+    "description": "নীল পাড়ের সাথে সাদা শাড়ি। বিশেষ কারুকার্য সহ, হাতে বুনা জামদানি শাড়ি যা ঐতিহ্যবাহী বাংলাদেশী শিল্পের একটি উৎকৃষ্ট নিদর্শন।",
+    "price": 15500,
+    "images": [
+      "/assets/product-1.jpg",
+      "/assets/product-1.jpg",
+      "/assets/product-1.jpg"
+    ],
+    "material": "সুতি",
+    "color": "সাদা এবং নীল",
+    "pattern": "জামদানি বুটি",
+    "region": "ঢাকা",
+    "inStock": true,
+    "quantity": 5
+  },
+  {
+    "id": "2",
+    "name": "ফুলবুটি জামদানি",
+    "description": "লাল পাড়ের সাথে গোলাপি শাড়ি। অত্যন্ত সূক্ষ্ম হাতের কাজের জামদানি শাড়ি, যেখানে ছোট ফুলের নকশা বুনা হয়েছে।",
+    "price": 12800,
+    "salePrice": 10900,
+    "images": [
+      "/assets/product-2.jpg",
+      "/assets/product-2.jpg",
+      "/assets/product-2.jpg"
+    ],
+    "material": "সুতি",
+    "color": "গোলাপি এবং লাল",
+    "pattern": "ফুলবুটি",
+    "region": "নরসিংদী",
+    "inStock": true,
+    "quantity": 8
+  },
+  {
+    "id": "3",
+    "name": "কাটারি জামদানি শাড়ি",
+    "description": "কালো পাড়ের সাথে সবুজ শাড়ি। বিশেষ কাটারি নকশা বুনানো হয়েছে এই অনন্য শাড়িতে, যা বাংলার ঐতিহ্যকে তুলে ধরে।",
+    "price": 18200,
+    "images": [
+      "/assets/product-3.jpg",
+      "/assets/product-3.jpg",
+      "/assets/product-3.jpg"
+    ],
+    "material": "সুতি",
+    "color": "সবুজ এবং কালো",
+    "pattern": "কাটারি বুটি",
+    "region": "ঢাকা",
+    "inStock": true,
+    "quantity": 3
+  }
+]

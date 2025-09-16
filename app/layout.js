@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
     className={`h-full ${hindSiliguri.variable} ${inter.variable}`}
     >
       <body
-        className={`${inter.className} min-h-screen flex flex-col `}
+        className={`${inter.className}  flex flex-col `}
       >
         <main className="flex-grow">{children}</main>
       </body>
