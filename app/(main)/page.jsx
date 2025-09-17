@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-import Footer from "@/components/Footer";
-import { auth } from "@/auth";
-
-export default async function HomePage(){
-    const session = await auth();
-
-    return (
-        <main>
-            <nav>Header Navbar</nav>
-            <Footer />
-        </main>
-    );
-}
-=======
 import PromotionalBanner from "./components/PromotionalBanner";
 import HeroSection from "./components/HeroSection";
 import TrustIndicators from "./components/TrustIndicators";
@@ -59,4 +44,3 @@ export default function Home() {
     </main>
   );
 }
->>>>>>> d629957c9e76c53ff431c6e99d4e4a113b85e68d

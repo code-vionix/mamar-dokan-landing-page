@@ -23,14 +23,11 @@ export default function RootLayout({ children }) {
     >
       <body
         className={`${inter.className} min-h-screen flex flex-col `}
+
       >
-<<<<<<< HEAD
         <SessionProvider>
-          {children}
-        </SessionProvider>
-=======
         <main className="flex-grow">{children}</main>
->>>>>>> d629957c9e76c53ff431c6e99d4e4a113b85e68d
+        </SessionProvider>
       </body>
     </html>
   );
