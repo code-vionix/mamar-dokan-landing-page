@@ -1,5 +1,6 @@
 import { Inter, Hind_Siliguri } from "next/font/google";
 import "./globals.css";
+import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const hindSiliguri = Hind_Siliguri({
@@ -22,8 +23,11 @@ export default function RootLayout({ children }) {
     >
       <body
         className={`${inter.className} min-h-screen flex flex-col `}
+
       >
+        <SessionProvider>
         <main className="flex-grow">{children}</main>
+        </SessionProvider>
       </body>
     </html>
   );

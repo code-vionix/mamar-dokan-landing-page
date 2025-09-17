@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation" // Next.js 13 app directory
 import RegisterInput from "./RegisterInput"
 import RegisterButton from "./RegisterButton"
 import RegisterDivider from "./RegisterDivider"
-import SocialLogin from "./SocialLogin"
+import SocialLogin from "../../login/components/SocialLogin"
 
 export default function RegisterForm() {
   const router = useRouter()
@@ -59,7 +59,6 @@ export default function RegisterForm() {
       }
 
       // Success
-      console.log("Registration Success:", data)
       setIsLoading(false)
       setFormData({ name: "", email: "", password: "", confirmPassword: "" })
 
