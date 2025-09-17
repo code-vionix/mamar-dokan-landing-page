@@ -59,7 +59,6 @@ export default function RegisterForm() {
       }
 
       // Success
-      console.log("Registration Success:", data)
       setIsLoading(false)
       setFormData({ name: "", email: "", password: "", confirmPassword: "" })
 

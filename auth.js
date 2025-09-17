@@ -27,10 +27,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           );
 
           const data = await res.json().catch(() => null);
-          // Optional: log in dev only
-          if (process.env.NODE_ENV !== "production") {
-            console.debug("/auth/login response:", { status: res.status, data });
-          }
+          // // Optional: log in dev only
+          // if (process.env.NODE_ENV !== "production") {
+          //   console.debug("/auth/login response:", { status: res.status, data });
+          // }
 
           if (!res.ok) {
             const message = data?.message || "Invalid credentials";
@@ -48,7 +48,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           return {
             id: user.id,
-            name: `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim(),
+            name: user.name ||"tuhin",
             email: user.email,
             image: user.avatarUrl,
             role: user.role,
