@@ -1,6 +1,6 @@
-import { Inter, Hind_Siliguri } from "next/font/google";
-import "./globals.css";
 import { SessionProvider } from "next-auth/react";
+import { Hind_Siliguri, Inter } from "next/font/google";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const hindSiliguri = Hind_Siliguri({

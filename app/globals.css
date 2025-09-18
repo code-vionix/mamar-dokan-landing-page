@@ -1,6 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap");
+
 @import "tailwindcss";
 
+@theme {
+  --color-cream: #faf5f0;
+  --font-sans: [ "Inter", "system-ui", "sans-serif"];
+  --font-bengali: [ "Hind Siliguri", "sans-serif"];
+}
 
 :root {
   --foreground-rgb: 33, 33, 33;
@@ -103,4 +109,3 @@ body {
   @apply absolute inset-0 bg-black/30 opacity-0 transition-opacity duration-300 
          flex items-center justify-center;
 }
-
