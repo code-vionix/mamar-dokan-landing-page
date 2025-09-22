@@ -1,10 +1,7 @@
-import mockProducts from "@/data/mockProducts";
-import ProductsGallery from "./ProductsGallery";
 import ProductsContent from "./ProductsContent";
+import ProductsGallery from "./ProductsGallery";
 
-const ProductDetails = ({ productId }) => {
-  const product = mockProducts.find((p) => p.id === productId);
-
+const ProductDetails = ({ product }) => {
   return (
     <div className="flex flex-col lg:flex-row -mx-4">
       {/* Left Column - Gallery */}
