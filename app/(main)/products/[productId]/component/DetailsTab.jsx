@@ -1,12 +1,10 @@
-import mockProducts from "@/data/mockProducts";
 import Link from "next/link";
 import DescriptionTab from "./DescriptionTab";
-import SpecificationsTab from "./SpecificationsTab";
 import ReviewsTab from "./ReviewsTab";
 import ShippingTab from "./ShippingTab";
+import SpecificationsTab from "./SpecificationsTab";
 
-const DetailsTab = ({ productId, Tab }) => {
-  const product = mockProducts.find((p) => p.id === productId);
+const DetailsTab = ({ product, Tab }) => {
   const activeTab = Tab || "description";
 
   // Helper function to get tab name in Bangla

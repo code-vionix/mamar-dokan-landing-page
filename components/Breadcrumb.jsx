@@ -1,8 +1,6 @@
 import Link from "next/link";
-import mockProducts from "@/data/mockProducts";
 
-const Breadcrumb = async ({ productId }) => {
-  const product = mockProducts.find((p) => p.id === productId);
+const Breadcrumb = async ({ product }) => {
   return (
     <div className="bg-amber-100 py-4">
       <div className="container mx-auto px-4 sm:px-6">

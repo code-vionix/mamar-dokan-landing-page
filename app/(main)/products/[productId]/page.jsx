@@ -1,11 +1,18 @@
 import Breadcrumb from "@/components/Breadcrumb";
+import DetailsTab from "./component/DetailsTab";
 import ProductDetails from "./component/ProductDetails";
 import RelatedProducts from "./component/RelatedProducts";
-import DetailsTab from "./component/DetailsTab";
 
 const producductsDetailspage = async ({ params, searchParams }) => {
   const { productId } = await params;
   const { tab } = await searchParams;
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${productId}`
+  );
+  const data = await response.json();
+  const product = data.data;
+
   //   if (!product)
   //     return (
   //       <div className="container mx-auto px-6 py-24 text-center">
@@ -20,11 +27,11 @@ const producductsDetailspage = async ({ params, searchParams }) => {
 
   return (
     <div className="bg-amber-50/30 min-h-screen pb-16 mt-12">
-      <Breadcrumb productId={productId} />
+      <Breadcrumb product={product} />
       {/* Product Section */}
       <div className="container mx-auto px-4 sm:px-6 py-8">
-        <ProductDetails productId={productId} />
-        <DetailsTab productId={productId} Tab={tab} />
+        <ProductDetails product={product} />
+        <DetailsTab product={product} Tab={tab} />
         <RelatedProducts />
       </div>
     </div>
