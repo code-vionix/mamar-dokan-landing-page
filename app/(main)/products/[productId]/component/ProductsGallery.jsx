@@ -1,9 +1,9 @@
 "use client";
 
+import calculatedDiscount from "@/lib/calculatedDiscount";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import calculatedDiscount from "@/lib/calculatedDiscount";
 
 const ProductsGallery = ({ product }) => {
   const imgRef = useRef(null);
@@ -32,7 +32,7 @@ const ProductsGallery = ({ product }) => {
         onMouseLeave={() => setShowZoom(false)}
       >
         <Image
-          src={product.images[activeImage]}
+          src={"/assets/product-1.jpg"}
           alt={product.name}
           fill
           className="object-contain"
@@ -73,7 +73,7 @@ const ProductsGallery = ({ product }) => {
           >
             <div className="relative h-20 w-20">
               <Image
-                src={img}
+                src={"/assets/product-1.jpg"}
                 alt={`${product.name} ${index + 1}`}
                 fill
                 className="object-cover"
@@ -91,7 +91,7 @@ const ProductsGallery = ({ product }) => {
         <div className="grid grid-cols-2 gap-4">
           <div className="relative h-60 rounded-lg overflow-hidden shadow-sm">
             <Image
-              src="/assets/product-style-1.jpg"
+              src="/assets/product-1.jpg"
               alt="Style Example 1"
               fill
               className="object-cover hover:scale-105 transition-transform duration-300"
@@ -99,7 +99,7 @@ const ProductsGallery = ({ product }) => {
           </div>
           <div className="relative h-60 rounded-lg overflow-hidden shadow-sm">
             <Image
-              src="/assets/product-style-2.jpg"
+              src="/assets/product-2.jpg"
               alt="Style Example 2"
               fill
               className="object-cover hover:scale-105 transition-transform duration-300"
