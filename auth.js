@@ -39,7 +39,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
 
           const user = data?.data?.user;
-          console.log(user)
           const accessToken = data?.data?.accessToken;
 
           if (!user || !accessToken) {
