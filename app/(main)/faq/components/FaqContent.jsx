@@ -6,11 +6,11 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const FaqContent = () => {
+const FaqContent = ({ searchQuery }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // params থেকে মান নেওয়া
+  // Get active category and search query from URL parameters
   const activeCategory = searchParams.get("category") || "all";
   const query = searchParams.get("query") || "";
 
@@ -30,7 +30,11 @@ const FaqContent = () => {
       faq.question.toLowerCase().includes(query.toLowerCase()) ||
       faq.answer.toLowerCase().includes(query.toLowerCase());
 
-    return matchCategory && matchQuery;
+    const searchMatchQuery =
+      faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchCategory && matchQuery && searchMatchQuery;
   });
 
   return (

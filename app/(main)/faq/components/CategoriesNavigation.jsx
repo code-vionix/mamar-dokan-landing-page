@@ -30,13 +30,13 @@ const CategoriesNavigation = () => {
     { id: "account", name: "অ্যাকাউন্ট", icon: <User size={20} /> },
   ];
 
-  // বর্তমানে কোন ক্যাটাগরি URL এ আছে সেটি ধরা
+  
   const activeCategory = searchParams.get("category") || "all";
 
   const handleCategoryChange = (id) => {
     const params = new URLSearchParams(searchParams.toString());
     if (id === "all") {
-      params.delete("category"); // all হলে param মুছে ফেলব
+      params.delete("category"); 
     } else {
       params.set("category", id);
     }
