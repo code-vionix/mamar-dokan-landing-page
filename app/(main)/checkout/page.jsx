@@ -1,10 +1,11 @@
-"use client"
-import Link from "next/link"
-import { useState } from "react"
+"use client";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
-import Header from "./components/Header"
-import OrderSummary from "./components/OrderSummary"
-import CheckoutForm from "./components/form/CheckoutForm"
+import Header from "./components/Header";
+import OrderSummary from "./components/OrderSummary";
+import CheckoutForm from "./components/form/CheckoutForm";
+import { useSession } from "next-auth/react";
 
 // Mock data for demonstration
 
@@ -17,7 +18,7 @@ const cartItems = [
     quantity: 1,
     image: "/assets/product-3.jpg",
     color: "গোলাপি",
-    size: "৫.৫ মিটার"
+    size: "৫.৫ মিটার",
   },
   {
     id: 2,
@@ -27,16 +28,18 @@ const cartItems = [
     quantity: 1,
     image: "/assets/product-1.jpg",
     color: "হালকা নীল",
-    size: "৫.৫ মিটার"
-  }
-]
+    size: "৫.৫ মিটার",
+  },
+];
 
 export default function CheckoutPage() {
-  const [step, setStep] = useState(1)
+  const session = useSession();
+  const user = session?.data?.user;
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    email: "",
+    email: user?.email || "",
     phone: "",
     address: "",
     city: "",
@@ -44,37 +47,50 @@ export default function CheckoutPage() {
     paymentMethod: "cash",
     image: null,
     shippingMethod: "standard",
-    notes: ""
-  })
+    notes: "",
+  });
 
-   // Calculate order summary
+  // Calculate order summary
   const subtotal = cartItems.reduce(
     (total, item) => total + item.discountPrice * item.quantity,
     0
-  )
-  const shipping = formData.shippingMethod === "express" ? 150 : 80
-  const total = subtotal + shipping
+  );
+  const shipping = formData.shippingMethod === "express" ? 150 : 80;
+  const total = subtotal + shipping;
 
-  const handleSubmit = e => {
-    e.preventDefault()
+  const handleSubmit = (e) => {
+    e.preventDefault();
     if (step === 1) {
-      setStep(2)
-      window.scrollTo(0, 0)
+      setStep(2);
+      window.scrollTo(0, 0);
     } else if (step === 2) {
       const order = {
         ...formData,
-        userId: "test",
+        userId: user?.id,
         items: cartItems,
         subtotal,
         total,
-        shipping
-      }
-      console.log(order)
-      setStep(3)
-      window.scrollTo(0, 0)
+        shipping,
+      };
+      console.log(order);
+      setStep(3);
+      window.scrollTo(0, 0);
     }
     // Final step would submit the order
-  }
+  };
+
+  useEffect(() => {
+    if (user) {
+      const { firstName, lastName } = splitName(user?.name);
+
+      setFormData((prev) => ({
+        ...prev,
+        firstName: prev.firstName || firstName,
+        lastName: prev.lastName || lastName,
+        email: prev.email || user.email,
+      }));
+    }
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-amber-50/30">
@@ -119,15 +135,38 @@ export default function CheckoutPage() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Checkout Form */}
-            <CheckoutForm step={step} setStep={setStep} onSubmit={handleSubmit} formData={formData} setFormData={setFormData} />
+            <CheckoutForm
+              step={step}
+              setStep={setStep}
+              onSubmit={handleSubmit}
+              formData={formData}
+              setFormData={setFormData}
+            />
 
             {/* Order Summary */}
-            <OrderSummary cartItems={cartItems} subtotal={subtotal} total={total} shipping={shipping} />
+            <OrderSummary
+              cartItems={cartItems}
+              subtotal={subtotal}
+              total={total}
+              shipping={shipping}
+            />
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
+function splitName(fullName = "") {
+  const parts = fullName.trim().split(" ").filter(Boolean);
+  if (parts.length === 0) {
+    return { firstName: "", lastName: "" };
+  }
+  if (parts.length === 1) {
+    return { firstName: parts[0], lastName: "" };
+  }
+  const lastName = parts.pop();
+  const firstName = parts.join(" ");
 
+  return { firstName, lastName };
+}
