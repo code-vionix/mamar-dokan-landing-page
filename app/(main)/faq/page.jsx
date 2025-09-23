@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import FaqHero from "./components/FaqHero";
 import FaqBreadCrumb from "./components/FaqBreadCrumb";
@@ -6,9 +5,8 @@ import CategoriesNavigation from "./components/CategoriesNavigation";
 import ContactSection from "./components/ContactSection";
 import FaqContent from "./components/FaqContent";
 
-export default function FAQPage() {
-  const [searchQuery, setSearchQuery] = useState("");
 
+export default function FAQPage() {
   // Filter FAQs based on search query and active category
   //   useEffect(() => {
   //     let result = [...faqData];
@@ -43,8 +41,8 @@ export default function FAQPage() {
               <input
                 type="text"
                 placeholder="আপনার প্রশ্ন লিখুন..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                // value={searchQuery}
+                // onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full px-5 py-4 pl-12 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent font-bengali"
               />
               <Search className="absolute left-4 top-4 text-gray-500" />
