@@ -12,6 +12,7 @@ const producductsDetailspage = async ({ params, searchParams }) => {
   );
   const data = await response.json();
   const product = data.data;
+  console.log("Fetched products:", product);
 
   //   if (!product)
   //     return (
