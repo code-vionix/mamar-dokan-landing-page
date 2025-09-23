@@ -5,7 +5,7 @@ import Link from "next/link";
 // import { newArrivals } from "./mockData/data";
 const NewArrivals = async () => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products`
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?recent=true`
   );
   const data = await response.json();
   const products = data.data;
@@ -42,8 +42,8 @@ const NewArrivals = async () => {
                 >
                   <div className="relative h-64 overflow-hidden">
                     <Image
-                      src={"/assets/product-1.jpg"}
-                      alt={product.name}
+                        src={product?.images?.[0] || "/placeholder.png"}
+                        alt={product?.name}
                       width={400}
                       height={500}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
