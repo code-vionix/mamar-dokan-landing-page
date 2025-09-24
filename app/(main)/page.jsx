@@ -9,7 +9,13 @@ import PromotionalBanner from "./components/PromotionalBanner";
 import Testimonials from "./components/Testimonials";
 import TrustIndicators from "./components/TrustIndicators";
 
-export default function Home() {
+export default async function Home() {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/category`
+  );
+  const categoriesData = await response.json();
+  const categories = categoriesData.data;
+
   return (
     <main className="min-h-screen">
       {/* === Promotional Banner === */}
@@ -22,7 +28,7 @@ export default function Home() {
       <TrustIndicators />
 
       {/* === Featured Categories === */}
-      <FeaturedCategories />
+      <FeaturedCategories categories={categories} />
 
       {/* === New Arrivals Section === */}
       <NewArrivals />

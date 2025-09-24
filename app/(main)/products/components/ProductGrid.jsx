@@ -3,6 +3,7 @@ import { Heart, Search, Plus, ShoppingCart, Percent } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+
 const ProductGrid = ({
   sortedProducts,
   viewMode,
