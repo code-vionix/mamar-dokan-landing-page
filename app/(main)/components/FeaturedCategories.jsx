@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 import { ChevronRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { categories } from "./mockData/data";
+// import { categories } from "./mockData/data";
 
-const FeaturedCategories = () => {
+const FeaturedCategories = ({ categories }) => {
   return (
     <>
       <section className="py-16 bg-cream">
@@ -27,8 +27,8 @@ const FeaturedCategories = () => {
                 className="relative rounded-lg overflow-hidden shadow-lg group"
               >
                 <Image
-                  src={category.image}
-                  alt={category.name}
+                  src={category?.image || "/placeholder.png"}
+                  alt={category?.name}
                   width={500}
                   height={600}
                   className="w-full h-96 object-cover transition-transform duration-500 group-hover:scale-110"
@@ -38,7 +38,8 @@ const FeaturedCategories = () => {
                     <h3 className="text-xl font-bengali font-semibold text-white mb-2">
                       {category.name}
                     </h3>
-                    <Link href={`/products?category=${category.id}`}>
+                    <Link href={`/products?category=${category.name}`}>
+                    
                       <span className="text-amber-300 hover:text-amber-400 transition-colors font-bengali inline-flex items-center">
                         আরো দেখুন
                         <ArrowRight size={16} className="ml-1" />

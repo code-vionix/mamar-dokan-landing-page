@@ -1,12 +1,13 @@
 import { motion } from "framer-motion"
 
-const FilterSidebar = ({filterOpen, categories, occasions, materials, priceRange, setPriceRange, selectedCategory, setSelectedCategory, selectedOccasion, setSelectedOccasion, selectedMaterial, setSelectedMaterial}) => {
+const FilterSidebar = ({filterOpen, categories, occasions, materials, priceRange, setPriceRange, selectedCategory, setSelectedCategory, selectedOccasion, setSelectedOccasion, selectedMaterial, setSelectedMaterial, handleCategoryChange}) => {
 
  const handlePriceRangeChange = (index, value) => {
     const newPriceRange = [...priceRange];
     newPriceRange[index] = Number(value);
     setPriceRange(newPriceRange);
   };
+
 
 
 
@@ -33,7 +34,7 @@ const FilterSidebar = ({filterOpen, categories, occasions, materials, priceRange
                       id={`category-${category.id}`}
                       name="category"
                       checked={selectedCategory === category.id}
-                      onChange={() => setSelectedCategory(category.id)}
+                       onChange={() => handleCategoryChange(category.id)}
                       className="w-4 h-4 text-amber-600 border-amber-300 focus:ring-amber-500"
                     />
                     <label
