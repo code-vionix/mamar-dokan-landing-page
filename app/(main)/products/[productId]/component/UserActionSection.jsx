@@ -1,4 +1,6 @@
 "use client";
+import { useCart } from "@/lib/cart";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   CheckCircle,
   ChevronDown,
@@ -7,13 +9,13 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 const UserActionSection = ({ product }) => {
   const [colorChoice, setColorChoice] = useState("সাদা এবং নীল");
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const totalStock = product.quantity;
+  const { addToCart } = useCart();
 
   // Handle quantity changes
   const handleQuantityChange = (newQuantity) => {
@@ -24,19 +26,7 @@ const UserActionSection = ({ product }) => {
 
   // Handle add to cart
   const handleAddToCart = () => {
-    console.log(`Added ${quantity} of ${product.name} to cart`);
-
-    // Show success message
-    const messageElement = document.getElementById("cart-success-message");
-    if (messageElement) {
-      messageElement.classList.remove("opacity-0");
-      messageElement.classList.add("opacity-100");
-
-      setTimeout(() => {
-        messageElement.classList.remove("opacity-100");
-        messageElement.classList.add("opacity-0");
-      }, 3000);
-    }
+    addToCart({ ...product, quantity });
   };
 
   return (

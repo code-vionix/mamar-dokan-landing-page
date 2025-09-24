@@ -1,37 +1,6 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-} from "react";
-
-// Mock cart data for testing
-const mockCartItems = [
-  {
-    id: "1",
-    name: "ডোরা জামদানি শাড়ি",
-    price: 15500,
-    quantity: 1,
-    image: "/assets/product-1.jpg",
-  },
-  {
-    id: "2",
-    name: "ফুলবুটি জামদানি",
-    price: 12800,
-    salePrice: 10900,
-    quantity: 2,
-    image: "/assets/product-2.jpg",
-  },
-  {
-    id: "3",
-    name: "কাটারি জামদানি শাড়ি",
-    price: 18200,
-    quantity: 1,
-    image: "/assets/product-3.jpg",
-  },
-];
+import { createContext, useContext, useEffect, useState } from "react";
 
 const CartContext = createContext(undefined);
 
@@ -44,17 +13,17 @@ export function CartProvider({ children }) {
 
   // Load cart from localStorage only on the client side
   useEffect(() => {
-    const savedCart = localStorage.getItem("jamdani-cart");
+    const savedCart = localStorage.getItem("e-commerce-cart");
     if (savedCart) {
       try {
         const parsedCart = JSON.parse(savedCart);
         setCartItems(parsedCart);
       } catch (error) {
         console.error("Failed to parse cart from localStorage", error);
-        setCartItems(mockCartItems);
+        setCartItems([]);
       }
     } else {
-      setCartItems(mockCartItems);
+      setCartItems([]);
     }
     setIsLoaded(true);
   }, []);
@@ -64,7 +33,7 @@ export function CartProvider({ children }) {
     if (!isLoaded) return;
 
     if (cartItems.length > 0) {
-      localStorage.setItem("jamdani-cart", JSON.stringify(cartItems));
+      localStorage.setItem("e-commerce-cart", JSON.stringify(cartItems));
     }
 
     const items = cartItems.reduce((total, item) => total + item.quantity, 0);
@@ -101,7 +70,7 @@ export function CartProvider({ children }) {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
 
     if (cartItems.length === 1) {
-      localStorage.removeItem("jamdani-cart");
+      localStorage.removeItem("e-commerce-cart");
     }
   };
 
@@ -117,7 +86,7 @@ export function CartProvider({ children }) {
   // Clear entire cart
   const clearCart = () => {
     setCartItems([]);
-    localStorage.removeItem("jamdani-cart");
+    localStorage.removeItem("e-commerce-cart");
   };
 
   return (
