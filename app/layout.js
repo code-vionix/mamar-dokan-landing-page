@@ -9,24 +9,21 @@ const hindSiliguri = Hind_Siliguri({
   variable: "--font-bengali",
 });
 
-
-
 export const metadata = {
   title: "জামদানি শাড়ি - ঐতিহ্যবাহী বাংলাদেশী হস্তশিল্প",
-  description: "অনন্য কারুশিল্প এবং সাংস্কৃতিক ঐতিহ্য সমৃদ্ধ ঐতিহ্যবাহী বাংলাদেশী জামদানি শাড়ি অন্বেষণ করুন। খাঁটি জামদানি শাড়ির প্রিমিয়াম সংগ্রহ।",
+  description:
+    "অনন্য কারুশিল্প এবং সাংস্কৃতিক ঐতিহ্য সমৃদ্ধ ঐতিহ্যবাহী বাংলাদেশী জামদানি শাড়ি অন্বেষণ করুন। খাঁটি জামদানি শাড়ির প্রিমিয়াম সংগ্রহ।",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="bn"
-    className={`h-full ${hindSiliguri.variable} ${inter.variable}`}
+    <html
+      lang="bn"
+      className={`h-full ${hindSiliguri.variable} ${inter.variable}`}
     >
-      <body
-        className={`${inter.className} min-h-screen flex flex-col `}
-
-      >
+      <body className={`${inter.className} min-h-screen flex flex-col `}>
         <SessionProvider>
-        <main className="flex-grow">{children}</main>
+          <main className="flex-grow">{children}</main>
         </SessionProvider>
       </body>
     </html>

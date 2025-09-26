@@ -1,0 +1,127 @@
+export const orderData = [
+  {
+    id: "JMD-78542",
+    date: "০৫ মে, ২০২৫",
+    status: "delivered",
+    statusText: "ডেলিভারি সম্পন্ন",
+    total: 17200,
+    paymentMethod: "ক্যাশ অন ডেলিভারি",
+    trackingInfo: [
+      { status: "ordered", date: "০১ মে, ২০২৫", time: "সকাল ১১:২৪" },
+      { status: "processing", date: "০২ মে, ২০২৫", time: "দুপুর ০২:১০" },
+      { status: "shipped", date: "০৩ মে, ২০২৫", time: "সন্ধ্যা ০৫:৩০" },
+      { status: "outForDelivery", date: "০৫ মে, ২০২৫", time: "সকাল ০৯:১৫" },
+      { status: "delivered", date: "০৫ মে, ২০২৫", time: "বিকাল ০৪:০৫" },
+    ],
+    items: [
+      {
+        id: 1,
+        name: "হালকা নীল জামদানি শাড়ি",
+        image: "/assets/product-1.jpg",
+        price: 17200,
+        quantity: 1,
+      },
+    ],
+    address: {
+      name: "আফিফা আহমেদ",
+      phone: "01712345678",
+      address: "বাসা #১২, রোড #০৫, ব্লক-এ",
+      city: "মিরপুর-১০, ঢাকা-১২১৬",
+    },
+  },
+  {
+    id: "JMD-78982",
+    date: "২২ এপ্রিল, ২০২৫",
+    status: "processing",
+    statusText: "প্রসেসিং",
+    total: 29700,
+    paymentMethod: "বিকাশ",
+    trackingInfo: [
+      { status: "ordered", date: "২২ এপ্রিল, ২০২৫", time: "সকাল ১০:১৫" },
+      { status: "processing", date: "২৩ এপ্রিল, ২০২৫", time: "সকাল ১১:৩০" },
+    ],
+    items: [
+      {
+        id: 2,
+        name: "গোলাপি জামদানি শাড়ি",
+        image: "/assets/product-3.jpg",
+        price: 11800,
+        quantity: 1,
+      },
+      {
+        id: 3,
+        name: "সবুজ সিল্ক জামদানি শাড়ি",
+        image: "/assets/product-2.jpg",
+        price: 17900,
+        quantity: 1,
+      },
+    ],
+    address: {
+      name: "আফিফা আহমেদ",
+      phone: "01712345678",
+      address: "বাসা #১২, রোড #০৫, ব্লক-এ",
+      city: "মিরপুর-১০, ঢাকা-১২১৬",
+    },
+  },
+  {
+    id: "JMD-75214",
+    date: "১০ এপ্রিল, ২০২৫",
+    status: "cancelled",
+    statusText: "বাতিল করা হয়েছে",
+    total: 15500,
+    paymentMethod: "নগদ",
+    trackingInfo: [
+      { status: "ordered", date: "১০ এপ্রিল, ২০২৫", time: "দুপুর ০২:৪০" },
+      { status: "cancelled", date: "১১ এপ্রিল, ২০২৫", time: "সকাল ১০:২০" },
+    ],
+    items: [
+      {
+        id: 4,
+        name: "কালো-লাল জামদানি শাড়ি",
+        image: "/assets/product-4.jpg",
+        price: 15500,
+        quantity: 1,
+      },
+    ],
+    address: {
+      name: "আফিফা আহমেদ",
+      phone: "01712345678",
+      address: "ফ্ল্যাট #৩বি, হাউস #৭৮",
+      city: "বনানী, ঢাকা-১২১৩",
+    },
+    cancellationReason: "গ্রাহকের অনুরোধে বাতিল করা হয়েছে।",
+  },
+  {
+    id: "JMD-72156",
+    date: "২৮ মার্চ, ২০২৫",
+    status: "shipped",
+    statusText: "শিপিং হয়েছে",
+    total: 18900,
+    paymentMethod: "ক্যাশ অন ডেলিভারি",
+    trackingInfo: [
+      { status: "ordered", date: "২৮ মার্চ, ২০২৫", time: "সন্ধ্যা ০৬:২০" },
+      { status: "processing", date: "২৯ মার্চ, ২০২৫", time: "দুপুর ০১:১৫" },
+      { status: "shipped", date: "০১ এপ্রিল, ২০২৫", time: "সকাল ১১: ৪০" },
+    ],
+    items: [
+      {
+        id: 5,
+        name: "সবুজ-বেগুনি জামদানি শাড়ি",
+        image: "/assets/product-5.jpg",
+        price: 18900,
+        quantity: 1,
+      },
+    ],
+    shippingInfo: {
+      courier: "পাঠাও কুরিয়ার",
+      trackingNumber: "PT78542136",
+      estimatedDelivery: "০৩-০৪ এপ্রিল, ২০২৫",
+    },
+    address: {
+      name: "আফিফা আহমেদ",
+      phone: "01712345678",
+      address: "বাসা #১২, রোড #০৫, ব্লক-এ",
+      city: "মিরপুর-১০, ঢাকা-১২১৬",
+    },
+  },
+];
