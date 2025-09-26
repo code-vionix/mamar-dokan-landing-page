@@ -100,7 +100,7 @@ const ProductGrid = ({
                             e.stopPropagation();
                             setQuickViewProduct(product);
                           }}
-                          className="bg-white text-amber-800 px-4 py-2 rounded-md font-bengali hover:bg-amber-50 transition-colors transform translate-y-4 hover:cursor-pointer group-hover:translate-y-0 transition-transform duration-300"
+                          className="bg-white text-amber-800 px-4 py-2 rounded-md font-bengali hover:bg-amber-50 transition-all transform translate-y-4 hover:cursor-pointer group-hover:translate-y-0 duration-300"
                         >
                           দ্রুত দেখুন
                         </button>
