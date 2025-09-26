@@ -81,7 +81,7 @@ const ProductGrid = ({
                   )}
 
                   <Link
-                    href={`/products/${product.id}`}
+                    href={`/products/${product.slug}`}
                     className="block h-full"
                   >
                     <div className="w-full h-full relative overflow-hidden group">
