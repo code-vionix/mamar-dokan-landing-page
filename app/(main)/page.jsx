@@ -14,7 +14,7 @@ export default async function Home() {
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/category`
   );
   const categoriesData = await response.json();
-  const categories = categoriesData.data;
+  const categories = categoriesData.data || [];
 
   return (
     <main className="min-h-screen">

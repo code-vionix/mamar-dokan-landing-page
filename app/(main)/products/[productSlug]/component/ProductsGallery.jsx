@@ -7,7 +7,7 @@ import { useRef, useState } from "react";
 
 const ProductsGallery = ({ product }) => {
   const imgRef = useRef(null);
-  const [activeImage, setActiveImage] = useState(0);
+  const [activeImage, setActiveImage] = useState(product.images?.[0]);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const [showZoom, setShowZoom] = useState(false);
 
@@ -32,7 +32,7 @@ const ProductsGallery = ({ product }) => {
         onMouseLeave={() => setShowZoom(false)}
       >
         <Image
-          src={"/assets/product-1.jpg"}
+          src={activeImage ?? "/assets/product-1.jpg"}
           alt={product.name}
           fill
           className="object-contain"
@@ -43,7 +43,7 @@ const ProductsGallery = ({ product }) => {
           <div
             className="absolute inset-0 bg-no-repeat pointer-events-none z-10"
             style={{
-              backgroundImage: `url(${product.images[activeImage]})`,
+              backgroundImage: `url(${activeImage})`,
               backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
               backgroundSize: "200%",
             }}
@@ -63,17 +63,17 @@ const ProductsGallery = ({ product }) => {
           <motion.div
             key={index}
             className={`cursor-pointer border-2 rounded-md overflow-hidden flex-shrink-0 ${
-              activeImage === index
+              activeImage === img
                 ? "border-amber-500"
                 : "border-transparent hover:border-amber-300"
             }`}
-            onClick={() => setActiveImage(index)}
+            onClick={() => setActiveImage(img)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             <div className="relative h-20 w-20">
               <Image
-                src={"/assets/product-1.jpg"}
+                src={img ?? "/assets/product-1.jpg"}
                 alt={`${product.name} ${index + 1}`}
                 fill
                 className="object-cover"
@@ -83,7 +83,7 @@ const ProductsGallery = ({ product }) => {
         ))}
       </div>
 
-      {/* Additional product images showcase */}
+      {/* Additional product images showcase
       <div className="mt-8">
         <h3 className="font-bengali text-lg font-semibold mb-4 text-gray-800">
           শাড়ি পরিধান স্টাইল
@@ -106,7 +106,7 @@ const ProductsGallery = ({ product }) => {
             />
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

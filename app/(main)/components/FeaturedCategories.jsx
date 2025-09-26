@@ -1,9 +1,7 @@
-"use client";
-import { motion } from "framer-motion";
-import { ChevronRight, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { ArrowRight, ChevronRight } from "lucide-react";
+import * as motion from "motion/react-client";
 import Image from "next/image";
-// import { categories } from "./mockData/data";
+import Link from "next/link";
 
 const FeaturedCategories = ({ categories }) => {
   return (
@@ -27,7 +25,7 @@ const FeaturedCategories = ({ categories }) => {
                 className="relative rounded-lg overflow-hidden shadow-lg group"
               >
                 <Image
-                  src={category?.image || "/placeholder.png"}
+                  src={category?.imageUrl || "/placeholder.png"}
                   alt={category?.name}
                   width={500}
                   height={600}
@@ -38,8 +36,7 @@ const FeaturedCategories = ({ categories }) => {
                     <h3 className="text-xl font-bengali font-semibold text-white mb-2">
                       {category.name}
                     </h3>
-                    <Link href={`/products?category=${category.name}`}>
-                    
+                    <Link href={`/products?category=${category.slug}`}>
                       <span className="text-amber-300 hover:text-amber-400 transition-colors font-bengali inline-flex items-center">
                         আরো দেখুন
                         <ArrowRight size={16} className="ml-1" />
