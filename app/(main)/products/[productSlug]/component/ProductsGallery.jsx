@@ -32,7 +32,7 @@ const ProductsGallery = ({ product }) => {
         onMouseLeave={() => setShowZoom(false)}
       >
         <Image
-          src={"/assets/product-1.jpg"}
+          src={product.images?.[0] ?? "/assets/product-1.jpg"}
           alt={product.name}
           fill
           className="object-contain"
@@ -73,7 +73,7 @@ const ProductsGallery = ({ product }) => {
           >
             <div className="relative h-20 w-20">
               <Image
-                src={"/assets/product-1.jpg"}
+                src={product.images?.[0] ?? "/assets/product-1.jpg"}
                 alt={`${product.name} ${index + 1}`}
                 fill
                 className="object-cover"

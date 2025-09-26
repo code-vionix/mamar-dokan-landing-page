@@ -8,7 +8,7 @@ const NewArrivals = async () => {
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?recent=true`
   );
   const data = await response.json();
-  const products = data.data;
+  const products = data.data || [];
 
   return (
     <>
@@ -29,7 +29,7 @@ const NewArrivals = async () => {
             {products.slice(0, 4).map((product) => (
               <Link
                 key={product.id}
-                href={`/products/${product.id}`}
+                href={`/products/${product.slug}`}
                 className="contents"
               >
                 <motion.div
@@ -42,8 +42,8 @@ const NewArrivals = async () => {
                 >
                   <div className="relative h-64 overflow-hidden">
                     <Image
-                        src={product?.images?.[0] || "/placeholder.png"}
-                        alt={product?.name}
+                      src={product?.images?.[0] || "/placeholder.png"}
+                      alt={product?.name}
                       width={400}
                       height={500}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"

@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
-import { Heart, Search, Plus, ShoppingCart, Percent } from "lucide-react";
+import { Heart, Percent, Plus, Search, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
 
 const ProductGrid = ({
   sortedProducts,
@@ -74,7 +73,7 @@ const ProductGrid = ({
                   )}
 
                   {product.salePrice && (
-                    <div className="absolute top-3 left-3 z-10 mt-8 bg-red-500 text-white px-2 py-1 text-xs font-medium rounded-md font-bengali flex items-center">
+                    <div className="absolute top-3 left-3 z-10 bg-red-500 text-white px-2 py-1 text-xs font-medium rounded-md font-bengali flex items-center">
                       <Percent size={12} className="mr-1" />
                       {calculateDiscount(product.price, product.salePrice)}%
                       ছাড়
