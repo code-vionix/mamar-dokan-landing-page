@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Check, Share2, ShoppingCart, Trash2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -11,6 +12,40 @@ export default function WishlistItemCard({
   onAddToCart,
   onRemove,
 }) {
+
+  const { data: session, status } = useSession();
+    const userId = session?.user?.id;
+
+// === toggle favorite ===
+  const toggleFavorite = async (productId) => {
+    if (!userId) {
+      // === redirect user to login page ===
+      router.push("/login");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/wishlist/${userId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        onRemove(productId)
+      } else {
+        console.error("Error:", data.message);
+      }
+    } catch (err) {
+      console.error("Error toggling wishlist:", err);
+    }
+  };
+
   return (
     <motion.div
       initial={{ scale: 0.95, opacity: 0 }}
@@ -24,7 +59,8 @@ export default function WishlistItemCard({
       {/* Product Image */}
       <div className="relative h-64 overflow-hidden group">
         <Image
-          src={item.image}
+         
+           src={item?.images?.[0] || "/placeholder.png"}
           alt={item.name}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
@@ -50,7 +86,7 @@ export default function WishlistItemCard({
         <div className="absolute bottom-3 right-3 flex space-x-2">
           <button
             className="bg-white/90 hover:bg-white p-2 rounded-full shadow-md transition-colors"
-            onClick={() => onRemove(item.id)}
+            onClick={() => toggleFavorite(item.id)}
             aria-label="Remove from wishlist"
           >
             <Trash2 size={18} className="text-red-600" />
@@ -84,17 +120,18 @@ export default function WishlistItemCard({
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center">
             <p className="font-bengali font-medium text-amber-800 text-lg">
-              ৳ {item.discountPrice.toLocaleString()}
+              ৳ {item?.price?.toLocaleString()}
             </p>
             {item.price > item.discountPrice && (
               <p className="text-sm text-gray-500 line-through ml-2">
                 ৳ {item.price.toLocaleString()}
               </p>
             )}
+            
           </div>
           {/* Color Options */}
           <div className="flex items-center space-x-1">
-            {item.colors.map((color, idx) => (
+            {item?.colors?.map((color, idx) => (
               <div
                 key={idx}
                 className="w-4 h-4 rounded-full border border-gray-200"
