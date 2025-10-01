@@ -6,7 +6,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import FormInput from "./FormInput";
 
-export default function PasswordSection({ onSetShowSuccess }) {
+const API_URL = process.env.NEXT_PUBLIC_API_URL; // example: "https://api.example.com"
+
+export default function PasswordSection({ userId, onSetShowSuccess }) {
   const {
     register,
     handleSubmit,
@@ -16,22 +18,43 @@ export default function PasswordSection({ onSetShowSuccess }) {
   } = useForm({
     mode: "onTouched",
   });
+
   const [isLoading, setIsLoading] = useState(false);
-  /* handel function start  */
-  const onSubmit = (data) => {
+  const [apiError, setApiError] = useState(null);
+
+  /* handle submit function */
+  const onSubmit = async (data) => {
     setIsLoading(true);
+    setApiError(null);
 
-    // Simulate an API call
-    console.log("Saving password data:", data);
+    try {
+      const response = await fetch(`${API_URL}/user/${userId}/password`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currentPassword: data.current,
+          newPassword: data.new,
+        }),
+      });
 
-    setTimeout(() => {
-      // Clear fields and show success message
-      reset();
-      onSetShowSuccess(true);
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        reset();
+        onSetShowSuccess(true);
+      } else {
+        setApiError(result.message || "পাসওয়ার্ড আপডেট করতে ব্যর্থ হয়েছে।");
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+      setApiError("সার্ভার এরর হয়েছে। আবার চেষ্টা করুন।");
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
-  /* handel function end  */
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -90,6 +113,10 @@ export default function PasswordSection({ onSetShowSuccess }) {
             }}
           />
         </div>
+
+        {apiError && (
+          <p className="text-red-600 text-sm font-bengali mt-2">{apiError}</p>
+        )}
 
         <div className="mt-6">
           <button
