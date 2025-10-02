@@ -1,47 +1,26 @@
 "use client";
-import {
-  CheckCircle,
-  ChevronDown,
-  ChevronUp,
-  Share2,
-  ShoppingCart,
-} from "lucide-react";
+import { useCart } from "@/lib/cart";
+import { motion } from "framer-motion";
+import { CheckCircle, Share2, ShoppingCart } from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 const UserActionSection = ({ product }) => {
   const [colorChoice, setColorChoice] = useState("সাদা এবং নীল");
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const totalStock = product.quantity;
+  const totalStock = product.stock?.[0]?.quantity;
+  const { addToCart } = useCart();
 
   // Handle quantity changes
   const handleQuantityChange = (newQuantity) => {
-    if (newQuantity >= 1 && newQuantity !== 10) {
+    if (newQuantity >= 1) {
       setQuantity(newQuantity);
-    }
-  };
-
-  // Handle add to cart
-  const handleAddToCart = () => {
-    console.log(`Added ${quantity} of ${product.name} to cart`);
-
-    // Show success message
-    const messageElement = document.getElementById("cart-success-message");
-    if (messageElement) {
-      messageElement.classList.remove("opacity-0");
-      messageElement.classList.add("opacity-100");
-
-      setTimeout(() => {
-        messageElement.classList.remove("opacity-100");
-        messageElement.classList.add("opacity-0");
-      }, 3000);
     }
   };
 
   return (
     <>
-      {/* Color options */}
+      {/* Color options
       <div className="mb-6">
         <h3 className="text-sm font-medium text-gray-700 font-bengali mb-2">
           কালার বাছাই করুন:
@@ -61,9 +40,9 @@ const UserActionSection = ({ product }) => {
             </button>
           ))}
         </div>
-      </div>
+      </div> */}
 
-      {/* Size Guide */}
+      {/* Size Guide
       <div className="mb-6">
         <button
           onClick={() => setShowSizeGuide(!showSizeGuide)}
@@ -98,7 +77,7 @@ const UserActionSection = ({ product }) => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </div> */}
 
       {/* Add to cart section */}
       <div className="mb-6">
@@ -118,13 +97,12 @@ const UserActionSection = ({ product }) => {
             <button
               onClick={() => handleQuantityChange(quantity + 1)}
               className="px-3 py-2 text-amber-800 hover:bg-amber-100 transition-colors"
-              disabled={quantity >= 10}
             >
               +
             </button>
           </div>
           <div className="ml-4 text-sm text-gray-500 font-bengali">
-            (অবশিষ্ট: {product.quantity})
+            (অবশিষ্ট: {totalStock - quantity || 0})
           </div>
         </div>
 
@@ -132,7 +110,7 @@ const UserActionSection = ({ product }) => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={handleAddToCart}
+            onClick={() => addToCart({ ...product, quantity })}
             className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-3 px-6 rounded-md font-bengali flex items-center justify-center"
           >
             <ShoppingCart className="h-5 w-5 mr-2" />

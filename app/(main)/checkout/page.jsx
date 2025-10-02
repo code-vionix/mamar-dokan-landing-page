@@ -2,37 +2,16 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { useCart } from "@/lib/cart";
+import { useSession } from "next-auth/react";
 import Header from "./components/Header";
 import OrderSummary from "./components/OrderSummary";
 import CheckoutForm from "./components/form/CheckoutForm";
-import { useSession } from "next-auth/react";
 
 // Mock data for demonstration
 
-const cartItems = [
-  {
-    id: 1,
-    name: "গোলাপি তাঁত জামদানি শাড়ি",
-    price: 12500,
-    discountPrice: 11800,
-    quantity: 1,
-    image: "/assets/product-3.jpg",
-    color: "গোলাপি",
-    size: "৫.৫ মিটার",
-  },
-  {
-    id: 2,
-    name: "হালকা নীল সিল্ক জামদানি",
-    price: 18500,
-    discountPrice: 17200,
-    quantity: 1,
-    image: "/assets/product-1.jpg",
-    color: "হালকা নীল",
-    size: "৫.৫ মিটার",
-  },
-];
-
 export default function CheckoutPage() {
+  const { cartItems } = useCart();
   const session = useSession();
   const user = session?.data?.user;
   const [step, setStep] = useState(1);

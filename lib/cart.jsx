@@ -1,37 +1,6 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-} from "react";
-
-// Mock cart data for testing
-const mockCartItems = [
-  {
-    id: "1",
-    name: "ডোরা জামদানি শাড়ি",
-    price: 15500,
-    quantity: 1,
-    image: "/assets/product-1.jpg",
-  },
-  {
-    id: "2",
-    name: "ফুলবুটি জামদানি",
-    price: 12800,
-    salePrice: 10900,
-    quantity: 2,
-    image: "/assets/product-2.jpg",
-  },
-  {
-    id: "3",
-    name: "কাটারি জামদানি শাড়ি",
-    price: 18200,
-    quantity: 1,
-    image: "/assets/product-3.jpg",
-  },
-];
+import { createContext, useContext, useEffect, useState } from "react";
 
 const CartContext = createContext(undefined);
 
@@ -51,10 +20,10 @@ export function CartProvider({ children }) {
         setCartItems(parsedCart);
       } catch (error) {
         console.error("Failed to parse cart from localStorage", error);
-        setCartItems(mockCartItems);
+        setCartItems([]);
       }
     } else {
-      setCartItems(mockCartItems);
+      setCartItems([]);
     }
     setIsLoaded(true);
   }, []);

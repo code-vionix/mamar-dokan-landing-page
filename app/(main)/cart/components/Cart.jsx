@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { Loader2 } from "lucide-react";
 import { useCart } from "@/lib/cart";
-import Header from "./Header";
-import EmptyCart from "./EmptyCart";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 import CartItems from "./CartItems";
+import EmptyCart from "./EmptyCart";
+import Header from "./Header";
 import OrderSummary from "./OrderSummary";
 
 const Cart = () => {
@@ -24,18 +24,6 @@ const Cart = () => {
     if (newQuantity >= 1) {
       updateQuantity(id, newQuantity);
     }
-  };
-
-  const handleCheckout = () => {
-    setIsCheckingOut(true);
-    // In a real app, you would redirect to checkout page
-    setTimeout(() => {
-      setIsCheckingOut(false);
-      // For demo purposes only
-      alert(
-        "Proceeding to checkout! This would normally redirect to a checkout page."
-      );
-    }, 1500);
   };
 
   // Show loading state while cart data is being fetched from localStorage
@@ -71,7 +59,6 @@ const Cart = () => {
               <OrderSummary
                 totalAmount={totalAmount}
                 isCheckingOut={isCheckingOut}
-                handleCheckout={handleCheckout}
               />
             </div>
           )}

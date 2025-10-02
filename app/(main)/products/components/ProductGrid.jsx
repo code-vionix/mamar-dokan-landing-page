@@ -1,3 +1,4 @@
+import { useCart } from "@/lib/cart";
 import { motion } from "framer-motion";
 import { Heart, Percent, Plus, Search, ShoppingCart } from "lucide-react";
 import Image from "next/image";
@@ -12,6 +13,8 @@ const ProductGrid = ({
   renderRatingStars,
   setQuickViewProduct,
 }) => {
+  const { addToCart } = useCart();
+
   const calculateDiscount = (price, salePrice) => {
     if (!salePrice) return 0;
     return Math.round(((price - salePrice) / price) * 100);
@@ -149,7 +152,7 @@ const ProductGrid = ({
 
                   <div className="flex items-center mt-auto gap-2">
                     <button
-                      onClick={() => handleAddToCart(product)}
+                      onClick={() => addToCart(product)}
                       className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-md font-bengali flex items-center justify-center flex-1 transition-colors"
                     >
                       <ShoppingCart size={16} className="mr-1" />
