@@ -1,37 +1,136 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Camera, Mail, Phone, Save } from "lucide-react";
+import { Camera, Mail, Phone, Save, Trash2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export default function ProfileSection({ initialData, onSave }) {
-  const [profile, setProfile] = useState(initialData);
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+export default function ProfileSection({ onSetShowSuccess }) {
+  const { data: session, status } = useSession();
+  const user = session?.user;
+  const fileInputRef = useRef(null);
+
+  // profile state
+  const [profile, setProfile] = useState({
+    id: "",
+    name: "",
+    email: "",
+    phone: "",
+    profileImage: null,
+  });
+
   const [isLoading, setIsLoading] = useState(false);
-  const [userData, setUserData] = useState(initialData);
+  const [isImageUploading, setIsImageUploading] = useState(false);
+  const [apiError, setApiError] = useState(null);
 
+  // user data load
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        id: user?.id || "",
+        name: user?.name || "",
+        email: user?.email || "",
+        phone: user?.phone || "",
+        profileImage: user?.image || null,
+      });
+    }
+  }, [user]);
+
+  // input handler
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
-    setProfile((prevProfile) => ({
-      ...prevProfile,
+    setProfile((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
-  const handleProfileSubmit = (e) => {
+  // profile update API
+  const handleProfileSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setApiError(null);
 
-    // Simulate an API call
-    setTimeout(() => {
-      console.log("Saving profile data:", profile);
-      onSave((prevData) => ({
-        ...prevData,
-        user: profile,
-      }));
+    try {
+      const response = await fetch(`${API_URL}/user/${profile.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: profile.name,
+          phone: profile.phone,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        setApiError(result.message || "প্রোফাইল আপডেট ব্যর্থ হয়েছে।");
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+      setApiError("সার্ভার এরর হয়েছে। আবার চেষ্টা করুন।");
+    } finally {
       setIsLoading(false);
-    }, 1500);
+      onSetShowSuccess(true);
+    }
   };
+
+  // profile image upload
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsImageUploading(true);
+    setApiError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await fetch(`${API_URL}/user/${profile.id}/avatar`, {
+        method: "PATCH",
+        // headers: {
+        //   Authorization: `Bearer ${session?.user?.accessToken}`,
+        // },
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setProfile((prev) => ({
+          ...prev,
+          profileImage: result.data.avatarUrl,
+        }));
+      } else {
+        setApiError(result.message || "ইমেজ আপলোড ব্যর্থ হয়েছে।");
+      }
+    } catch (error) {
+      console.error("Image Upload Error:", error);
+      setApiError("ইমেজ আপলোডের সময় সমস্যা হয়েছে।");
+    } finally {
+      setIsImageUploading(false);
+      onSetShowSuccess(true);
+    }
+  };
+
+  // remove image
+  const handleRemoveImage = () => {
+    setProfile((prev) => ({ ...prev, profileImage: null }));
+  };
+
+  if (status === "loading") {
+    return <p className="text-gray-500">লোড হচ্ছে...</p>;
+  }
+
+  if (!user) {
+    return <p className="text-gray-500">লগইন করার পর প্রোফাইল দেখা যাবে</p>;
+  }
 
   return (
     <motion.div
@@ -43,18 +142,34 @@ export default function ProfileSection({ initialData, onSave }) {
         প্রোফাইল সেটিংস
       </h2>
 
+      {/* Profile Image */}
       <div className="mb-6 flex flex-col md:flex-row items-start md:items-center gap-6">
         <div className="relative">
           <Image
-            src={userData.profileImage || "/placeholder.png"}
-            alt={userData.name || "Profile Image"}
+            src={profile.profileImage || "/placeholder.png"}
+            alt={profile.name || "Profile Image"}
             width={100}
             height={100}
-            className="rounded-full border-2 border-amber-200"
+            className="rounded-full border-2 border-amber-200 object-cover"
           />
-          <button className="absolute bottom-0 right-0 bg-amber-100 rounded-full p-2 border border-amber-300 hover:bg-amber-200 transition-colors">
-            <Camera className="h-4 w-4 text-amber-800" />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current.click()}
+            className="absolute bottom-0 right-0 bg-amber-100 rounded-full p-2 border border-amber-300 hover:bg-amber-200 transition-colors"
+          >
+            {isImageUploading ? (
+              <span className="inline-block h-4 w-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"></span>
+            ) : (
+              <Camera className="h-4 w-4 text-amber-800" />
+            )}
           </button>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleImageUpload}
+            className="hidden"
+          />
         </div>
         <div className="flex flex-col">
           <h3 className="font-bengali font-medium text-lg">
@@ -64,18 +179,29 @@ export default function ProfileSection({ initialData, onSave }) {
             প্রস্তাবিত ইমেজ সাইজ: 300x300 পিক্সেল, সর্বোচ্চ 2MB
           </p>
           <div className="flex flex-wrap gap-2">
-            <button className="bg-amber-600 text-white px-4 py-2 text-sm rounded-md hover:bg-amber-700 transition-colors font-bengali">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current.click()}
+              className="bg-amber-600 text-white px-4 py-2 text-sm rounded-md hover:bg-amber-700 transition-colors font-bengali"
+            >
               ছবি আপলোড করুন
             </button>
-            <button className="border border-gray-300 text-gray-600 px-4 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors font-bengali">
+            <button
+              type="button"
+              onClick={handleRemoveImage}
+              className="border border-gray-300 text-gray-600 px-4 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors font-bengali flex items-center gap-1"
+            >
+              <Trash2 className="h-4 w-4" />
               ছবি মুছুন
             </button>
           </div>
         </div>
       </div>
 
+      {/* Profile Form */}
       <form onSubmit={handleProfileSubmit}>
         <div className="space-y-4">
+          {/* Name */}
           <div>
             <label
               htmlFor="name"
@@ -87,13 +213,14 @@ export default function ProfileSection({ initialData, onSave }) {
               type="text"
               id="name"
               name="name"
-              value={profile.name}
+              value={profile.name || ""}
               onChange={handleProfileChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
               required
             />
           </div>
 
+          {/* Email (disabled) */}
           <div>
             <label
               htmlFor="email"
@@ -106,15 +233,15 @@ export default function ProfileSection({ initialData, onSave }) {
                 type="email"
                 id="email"
                 name="email"
-                value={profile.email}
-                onChange={handleProfileChange}
-                className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                required
+                value={profile.email || ""}
+                disabled
+                className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
               />
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             </div>
           </div>
 
+          {/* Phone */}
           <div>
             <label
               htmlFor="phone"
@@ -127,7 +254,7 @@ export default function ProfileSection({ initialData, onSave }) {
                 type="tel"
                 id="phone"
                 name="phone"
-                value={profile.phone}
+                value={profile.phone || ""}
                 onChange={handleProfileChange}
                 className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
                 required
@@ -136,6 +263,10 @@ export default function ProfileSection({ initialData, onSave }) {
             </div>
           </div>
         </div>
+
+        {apiError && (
+          <p className="text-red-600 text-sm font-bengali mt-2">{apiError}</p>
+        )}
 
         <div className="mt-6">
           <button

@@ -2,7 +2,7 @@
 
 import { Star, StarHalf } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useOptimistic, useState } from "react";
 import FilterSidebar from "./FilterSidebar";
 import HeroSection from "./HeroSection";
 import ProductGrid from "./ProductGrid";
@@ -35,7 +35,11 @@ export default function Products({ products }) {
   const [quickViewProduct, setQuickViewProduct] = useState(null);
 
   const [loading, setLoading] = useState(true);
+
+
+
   const error = null;
+
   // const products = mockProducts;
 
   useEffect(() => {
@@ -66,26 +70,16 @@ export default function Products({ products }) {
     };
   }, []);
 
-  useEffect(() => {
-    const savedFavorites = localStorage.getItem("jamdani-favorites");
-    if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const savedFavorites = localStorage.getItem("jamdani-favorites");
+  //   if (savedFavorites) {
+  //     setFavorites(JSON.parse(savedFavorites));
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    localStorage.setItem("jamdani-favorites", JSON.stringify(favorites));
-  }, [favorites]);
-
-  const toggleFavorite = (productId) => {
-    setFavorites((prev) => {
-      if (prev.includes(productId)) {
-        return prev.filter((id) => id !== productId);
-      } else {
-        return [...prev, productId];
-      }
-    });
-  };
+  // useEffect(() => {
+  //   localStorage.setItem("jamdani-favorites", JSON.stringify(favorites));
+  // }, [favorites]);
 
   const handleAddToCart = (product) => {
     addToCart({
@@ -116,7 +110,7 @@ export default function Products({ products }) {
     }, 3000);
   };
 
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = (products || []).filter((product) => {
     const categoryMatch =
       selectedCategory === "all" || product.category.slug === selectedCategory;
     const priceToCheck = product.salePrice || product.price;
@@ -242,9 +236,10 @@ export default function Products({ products }) {
             viewMode={viewMode}
             setHoveredProduct={setHoveredProduct}
             favorites={favorites}
-            toggleFavorite={toggleFavorite}
             renderRatingStars={renderRatingStars}
             setQuickViewProduct={setQuickViewProduct}
+            setFavorites={setFavorites}
+            
           />
         </div>
       </div>
