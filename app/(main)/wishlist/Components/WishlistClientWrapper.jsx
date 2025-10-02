@@ -1,15 +1,22 @@
 "use client";
 
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { FilterEmptyState, WishlistEmptyState } from "./WishlistEmptyState";
 import WishlistFilterPanel from "./WishlistFilterPanel";
 import WishlistHeader from "./WishlistHeader";
 import WishlistItemCard from "./WishlistItemCard";
+import { useSession } from "next-auth/react";
 
 // Props will now receive initial data from the Server Component
-export default function WishlistClientWrapper({ initialItems }) {
-  const [wishlistItems, setWishlistItems] = useState(initialItems);
+export default  function WishlistClientWrapper() {
+// export default  function WishlistClientWrapper({ initialItems }) {
+  const { data: session, status } = useSession();
+    const userId = session?.user?.id;
+  
+
+// const [wishlistItems, setWishlistItems] = useState(initialItems);
+  const [wishlistItems, setWishlistItems] = useState([]);
   const [addedToCart, setAddedToCart] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Still useful for initial client hydration
   const [filterOpen, setFilterOpen] = useState(false);
@@ -19,6 +26,28 @@ export default function WishlistClientWrapper({ initialItems }) {
     materials: [],
     occasions: [],
   });
+
+useEffect(() => {
+  if (!userId) return;
+
+  async function fetchWishlist() {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/wishlist/${userId}`
+      );
+      const data = await response.json();
+      setWishlistItems(data.data.map((pro)=>pro.product));
+      
+     
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+    }
+  }
+
+  fetchWishlist();
+  
+}, [userId]);
+
 
   useEffect(() => {
     // Simulate initial loading time after data is received

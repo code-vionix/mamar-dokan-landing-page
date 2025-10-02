@@ -1,21 +1,96 @@
 import { motion } from "framer-motion";
 import { Heart, Percent, Plus, Search, ShoppingCart } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { startTransition, useEffect } from "react";
+// import { set } from "react-hook-form";
 
 const ProductGrid = ({
   sortedProducts,
   viewMode,
   setHoveredProduct,
   favorites,
-  toggleFavorite,
   renderRatingStars,
   setQuickViewProduct,
+  setFavorites,
+  
 }) => {
+  const { data: session, status } = useSession();
+  const userId = session?.user?.id;
+  const router = useRouter();
+
   const calculateDiscount = (price, salePrice) => {
     if (!salePrice) return 0;
     return Math.round(((price - salePrice) / price) * 100);
   };
+
+  // //  === Fetch Favorite on mount ====
+
+  useEffect(() => {
+    if (!userId) return;
+
+    async function fetchFavorite() {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/wishlist/${userId}`
+        );
+        const data = await res.json();
+
+        if (res.ok) {
+          setFavorites(data.data.map((item) => item.productId) || []);
+        } else {
+          console.error("Error fetching favorites:", data.message);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchFavorite();
+  }, [userId, setFavorites]);
+
+  // // === toggle favorite ===
+  const toggleFavorite = async (productId) => {
+    if (!userId) {
+      // === redirect user to login page ===
+      router.push("/login");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/wishlist/${userId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // console.log("Wishlist updated:", data);
+        setFavorites((prev) => {
+          if (prev.includes(productId)) {
+            // remove from favorites
+            return prev.filter((id) => id !== productId);
+          } else {
+            // add to favorites
+            return [...prev, productId];
+          }
+        });
+      } else {
+        console.error("Error:", data.message);
+      }
+    } catch (err) {
+      console.error("Error toggling wishlist:", err);
+    }
+  };
+
+
 
   return (
     <>
@@ -57,8 +132,8 @@ const ProductGrid = ({
                     >
                       <Heart
                         size={20}
-                        className={`${
-                          favorites.includes(product.id)
+                        className={`hover:cursor-pointer ${
+                          favorites?.includes(product.id)
                             ? "fill-red-500 text-red-500"
                             : "text-gray-600"
                         } transition-colors`}
