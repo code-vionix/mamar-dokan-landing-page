@@ -1,9 +1,10 @@
 "use client";
 
+import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
 import { useCallback, useState } from "react";
 
-// Import the modular client components
-import { motion } from "framer-motion";
+import { redirect } from "next/navigation";
 import AddressSection from "./AddressSection";
 import NotificationSection from "./NotificationSection";
 import PasswordSection from "./PasswordSection";
@@ -13,18 +14,24 @@ import ProfileSection from "./ProfileSection";
 import Sidebar from "./Sidebar";
 import SuccessMessage from "./SuccessMessage";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function ProfileContent({ initialData }) {
-  // Initialize state with a fallback empty object to prevent errors
+  const { data: session, status } = useSession();
+  // login user check
+
+  if (status === "unauthenticated") {
+    redirect("/login");
+  }
   const [userData, setUserData] = useState(initialData || {});
   const [activeTab, setActiveTab] = useState("profile");
   const [showSuccess, setShowSuccess] = useState(false);
 
+  // Child update handler
   const handleDataUpdate = useCallback((newData) => {
-    // In a real application, you would re-fetch data from the server or
-    // update the state in a more sophisticated way.
-    setUserData(newData);
+    setUserData((prev) => ({ ...prev, ...newData }));
     setShowSuccess(true);
-    console.log("Data updated. You should re-fetch or update state here.");
+    console.log("Data updated. Ideally re-fetch from server.");
   }, []);
 
   const handleDismissSuccess = useCallback(() => {
@@ -38,6 +45,7 @@ export default function ProfileContent({ initialData }) {
         isVisible={showSuccess}
         onDismiss={handleDismissSuccess}
       />
+
       <div className="container mx-auto px-6 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
@@ -46,6 +54,7 @@ export default function ProfileContent({ initialData }) {
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
+
           {/* Content Area */}
           <div className="w-full lg:w-3/4">
             <div className="bg-white rounded-xl shadow-sm p-6">
@@ -56,13 +65,13 @@ export default function ProfileContent({ initialData }) {
                 transition={{ duration: 0.3 }}
               >
                 {activeTab === "profile" && (
-                  <ProfileSection
-                    initialData={userData.user || {}}
-                    onSave={handleDataUpdate}
-                  />
+                  <ProfileSection onSetShowSuccess={setShowSuccess} />
                 )}
                 {activeTab === "password" && (
-                  <PasswordSection onSetShowSuccess={setShowSuccess} />
+                  <PasswordSection
+                    userId={session?.user?.id}
+                    onSetShowSuccess={setShowSuccess}
+                  />
                 )}
                 {activeTab === "notifications" && (
                   <NotificationSection
@@ -72,8 +81,8 @@ export default function ProfileContent({ initialData }) {
                 )}
                 {activeTab === "addresses" && (
                   <AddressSection
-                    initialData={userData.addresses || []}
-                    onSave={handleDataUpdate}
+                    userId={session?.user?.id}
+                    onSetShowSuccess={setShowSuccess}
                   />
                 )}
                 {activeTab === "payment" && (
