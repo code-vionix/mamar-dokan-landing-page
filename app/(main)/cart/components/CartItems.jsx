@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { Trash2, Minus, Plus, ArrowRight } from "lucide-react";
+import { ArrowRight, Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const CartItems = ({
   cartItems,
@@ -34,7 +34,7 @@ const CartItems = ({
                 <div className="md:w-1/5 mb-4 md:mb-0">
                   <div className="relative h-24 w-20 md:h-32 md:w-28 bg-gray-100 rounded-md overflow-hidden">
                     <Image
-                      src={item?.image || "/placeholder.png"}
+                      src={item?.images?.[0] || "/placeholder.png"}
                       alt={item?.name || "Product image"}
                       fill
                       className="object-cover"

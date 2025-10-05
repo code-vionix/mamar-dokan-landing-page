@@ -2,38 +2,20 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { useCart } from "@/lib/cart";
+import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import Header from "./components/Header";
 import OrderSummary from "./components/OrderSummary";
 import CheckoutForm from "./components/form/CheckoutForm";
-import { useSession } from "next-auth/react";
 
 // Mock data for demonstration
 
-const cartItems = [
-  {
-    id: 1,
-    name: "গোলাপি তাঁত জামদানি শাড়ি",
-    price: 12500,
-    discountPrice: 11800,
-    quantity: 1,
-    image: "/assets/product-3.jpg",
-    color: "গোলাপি",
-    size: "৫.৫ মিটার",
-  },
-  {
-    id: 2,
-    name: "হালকা নীল সিল্ক জামদানি",
-    price: 18500,
-    discountPrice: 17200,
-    quantity: 1,
-    image: "/assets/product-1.jpg",
-    color: "হালকা নীল",
-    size: "৫.৫ মিটার",
-  },
-];
-
 export default function CheckoutPage() {
+  const { cartItems } = useCart();
   const session = useSession();
+  const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams.toString());
   const user = session?.data?.user;
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -55,26 +37,64 @@ export default function CheckoutPage() {
     (total, item) => total + item.discountPrice * item.quantity,
     0
   );
-  const shipping = formData.shippingMethod === "express" ? 150 : 80;
+  const shipping = 80;
   const total = subtotal + shipping;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (step === 1) {
       setStep(2);
       window.scrollTo(0, 0);
     } else if (step === 2) {
       const order = {
-        ...formData,
         userId: user?.id,
-        items: cartItems,
-        subtotal,
-        total,
-        shipping,
+        email: formData.email,
+        items: cartItems.map((item) => ({
+          productId: item.id,
+          quantity: item?.stock?.[0]?.quantity,
+          price: item.salePrice,
+        })),
+        taxAmount: 10,
+        notes: formData.notes,
+        paymentMethod: formData.paymentMethod,
+        shippingAddress: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          addressLine1: formData.address,
+          city: formData.city,
+          postalCode: formData.postalCode,
+          country: "Bangladesh",
+          phone: formData.phone,
+        },
       };
       console.log(order);
-      setStep(3);
-      window.scrollTo(0, 0);
+      if (order.items.length === 0) {
+        alert("Your cart is empty.");
+        return;
+      }
+      if (!order.userId || !order.email || !order.taxAmount) {
+        alert("Please fill in all required fields.");
+        return;
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(order),
+        }
+      );
+      if (response.ok) {
+        // set url params
+        const order = await response.json();
+        params.set("orderId", order.id);
+        setStep(3);
+      } else {
+        alert("Failed to place order. Please try again.");
+      }
     }
     // Final step would submit the order
   };
@@ -91,6 +111,13 @@ export default function CheckoutPage() {
       }));
     }
   }, [user]);
+
+  useEffect(() => {
+    const orderId = params.get("orderId");
+    if (orderId) {
+      setStep(3);
+    }
+  }, [params]);
 
   return (
     <div className="min-h-screen bg-amber-50/30">

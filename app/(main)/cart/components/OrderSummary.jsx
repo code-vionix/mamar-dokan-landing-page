@@ -1,5 +1,14 @@
+"use client";
+
 import { motion } from "framer-motion";
-const OrderSummary = ({ totalAmount, isCheckingOut, handleCheckout }) => {
+import { useRouter } from "next/navigation";
+
+const OrderSummary = ({ totalAmount, isCheckingOut }) => {
+  const router = useRouter();
+
+  const handleCheckout = () => {
+    router.push("/checkout");
+  };
   return (
     <>
       <div className="lg:w-1/3">
@@ -10,8 +19,8 @@ const OrderSummary = ({ totalAmount, isCheckingOut, handleCheckout }) => {
 
           <div className="space-y-3 mb-6">
             <div className="flex justify-between text-gray-600">
-              <span className="font-bengali">উপ-মোট</span> 
-              <span>৳{totalAmount.toLocaleString()}</span>
+              <span className="font-bengali">উপ-মোট</span>
+              <span>৳{totalAmount?.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-gray-600">
               <span className="font-bengali">শিপিং ফি</span>
@@ -27,12 +36,12 @@ const OrderSummary = ({ totalAmount, isCheckingOut, handleCheckout }) => {
                 ৳
                 {(
                   totalAmount + (totalAmount >= 2000 ? 0 : 60)
-                ).toLocaleString()}
+                )?.toLocaleString()}
               </span>
             </div>
           </div>
 
-          {/* Promo code section */}
+          {/* Promo code section
           <div className="mb-6">
             <h3 className="text-sm font-medium text-gray-700 mb-2 font-bengali">
               প্রোমো কোড
@@ -47,7 +56,7 @@ const OrderSummary = ({ totalAmount, isCheckingOut, handleCheckout }) => {
                 প্রয়োগ করুন
               </button>
             </div>
-          </div>
+          </div> */}
 
           {/* Checkout button */}
           <motion.button

@@ -1,14 +1,25 @@
-import Link from "next/link";
+import { useCart } from "@/lib/cart";
 import { motion } from "framer-motion";
-import { ShoppingCart, Search, Heart, LogIn, UserPlus } from "lucide-react";
-import ProfileMenu from "./ProfileMenu";
+import { Heart, LogIn, Search, ShoppingCart, UserPlus } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
+import ProfileMenu from "./ProfileMenu";
 
-export default function NavIcons({ searchOpen, setSearchOpen, session, isMobile }) {
+export default function NavIcons({
+  searchOpen,
+  setSearchOpen,
+  session,
+  isMobile,
+}) {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const { cartItems } = useCart();
 
   return (
-    <div className={`flex items-center space-x-6 ${isMobile ? "md:hidden" : "hidden md:flex"}`}>
+    <div
+      className={`flex items-center space-x-6 ${
+        isMobile ? "md:hidden" : "hidden md:flex"
+      }`}
+    >
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
@@ -48,7 +59,7 @@ export default function NavIcons({ searchOpen, setSearchOpen, session, isMobile 
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
           >
-            3
+            {cartItems.length || 0}
           </motion.span>
         </Link>
       </motion.div>
@@ -63,7 +74,10 @@ export default function NavIcons({ searchOpen, setSearchOpen, session, isMobile 
             />
           ) : (
             <div className="flex space-x-3">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 <Link
                   href="/login"
                   className="text-gray-700 hover:text-amber-600 transition-all duration-300 flex items-center text-sm font-medium bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-2 rounded-full border border-amber-200 hover:border-amber-300"
@@ -72,7 +86,10 @@ export default function NavIcons({ searchOpen, setSearchOpen, session, isMobile 
                   <span className="font-bengali font-medium">লগইন</span>
                 </Link>
               </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 <Link
                   href="/register"
                   className="text-white bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 transition-all duration-300 flex items-center text-sm font-medium px-4 py-2 rounded-full shadow-lg"

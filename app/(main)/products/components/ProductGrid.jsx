@@ -1,10 +1,11 @@
+import { useCart } from "@/lib/cart";
 import { motion } from "framer-motion";
 import { Heart, Percent, Plus, Search, ShoppingCart } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { startTransition, useEffect } from "react";
+import { useEffect } from "react";
 // import { set } from "react-hook-form";
 
 const ProductGrid = ({
@@ -15,8 +16,8 @@ const ProductGrid = ({
   renderRatingStars,
   setQuickViewProduct,
   setFavorites,
-  
 }) => {
+  const { addToCart } = useCart();
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const router = useRouter();
@@ -89,8 +90,6 @@ const ProductGrid = ({
       console.error("Error toggling wishlist:", err);
     }
   };
-
-
 
   return (
     <>
@@ -224,7 +223,7 @@ const ProductGrid = ({
 
                   <div className="flex items-center mt-auto gap-2">
                     <button
-                      onClick={() => handleAddToCart(product)}
+                      onClick={() => addToCart(product)}
                       className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-md font-bengali flex items-center justify-center flex-1 transition-colors"
                     >
                       <ShoppingCart size={16} className="mr-1" />
