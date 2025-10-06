@@ -29,16 +29,20 @@ function OrderItemsList({ items }) {
             className="flex items-center py-3 border-b border-gray-100 last:border-0"
           >
             <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-              {item.image && <Image
-                src={item.image}
-                alt={item.name}
-                width={64}
-                height={64}
-                className="w-full h-full object-cover"
-              />}
+              {item?.product?.images?.[0] && (
+                <Image
+                  src={item?.product?.images?.[0]}
+                  alt={item?.product?.name}
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
             <div className="ml-4 flex-grow">
-              <h4 className="font-bengali font-medium">{item.name}</h4>
+              <h4 className="font-bengali font-medium">
+                {item?.product?.name}
+              </h4>
               <p className="text-sm text-gray-600 font-bengali">
                 পরিমাণ: {item.quantity}
               </p>
@@ -108,11 +112,15 @@ function OrderSummaryAndShipping({ order }) {
         </h4>
         <div className="bg-gray-50 p-4 rounded-md">
           <div className="space-y-2">
-            <p className="font-bengali font-medium">{order.shippingAddress.firstName}{" "}{order.shippingAddress.lastName}</p>
+            <p className="font-bengali font-medium">
+              {order.shippingAddress.firstName} {order.shippingAddress.lastName}
+            </p>
             <p className="text-gray-700 font-bengali">
               {order.shippingAddress.addressLine1}
             </p>
-            <p className="text-gray-700 font-bengali">{order.shippingAddress.city}</p>
+            <p className="text-gray-700 font-bengali">
+              {order.shippingAddress.city}
+            </p>
             <p className="text-gray-700 font-bengali">
               ফোন: {order.shippingAddress?.phone}
             </p>
