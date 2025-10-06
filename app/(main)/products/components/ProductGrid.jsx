@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 // import { set } from "react-hook-form";
 
 const ProductGrid = ({
@@ -223,8 +224,11 @@ const ProductGrid = ({
 
                   <div className="flex items-center mt-auto gap-2">
                     <button
-                      onClick={() => addToCart(product)}
-                      className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-md font-bengali flex items-center justify-center flex-1 transition-colors"
+                      onClick={() => {
+                        addToCart({...product, quantity: 1});
+                        toast.success("Product added in cart!")
+                      }}
+                      className="bg-amber-600 hover:bg-amber-700 active:scale-90 text-white px-3 py-2 rounded-md font-bengali flex items-center justify-center flex-1 transition-colors"
                     >
                       <ShoppingCart size={16} className="mr-1" />
                       <span>কার্টে যোগ করুন</span>

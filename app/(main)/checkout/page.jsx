@@ -8,11 +8,12 @@ import { useSearchParams } from "next/navigation";
 import Header from "./components/Header";
 import OrderSummary from "./components/OrderSummary";
 import CheckoutForm from "./components/form/CheckoutForm";
+import { toast } from "sonner";
 
 // Mock data for demonstration
 
 export default function CheckoutPage() {
-  const { cartItems } = useCart();
+  const { cartItems: originalCart } = useCart();
   const session = useSession();
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
@@ -26,18 +27,20 @@ export default function CheckoutPage() {
     address: "",
     city: "",
     postalCode: "",
-    paymentMethod: "cash",
+    paymentMethod: "COD",
     image: null,
     shippingMethod: "standard",
     notes: "",
   });
 
+  const cartItems = originalCart.filter(item=>item.stock[0].quantity > 0);
+
   // Calculate order summary
   const subtotal = cartItems.reduce(
-    (total, item) => total + item.discountPrice * item.quantity,
+    (total, item) => total + item.salePrice * item.quantity,
     0
   );
-  const shipping = 80;
+  const shipping = subtotal >= 2000 ? 0: 60;
   const total = subtotal + shipping;
 
   const handleSubmit = async (e) => {
@@ -51,10 +54,15 @@ export default function CheckoutPage() {
         email: formData.email,
         items: cartItems.map((item) => ({
           productId: item.id,
-          quantity: item?.stock?.[0]?.quantity,
+          name: item.name,
+          quantity: item?.quantity,
           price: item.salePrice,
+          total: item.salePrice * item.quantity,
+          image: item.images[0]
         })),
         taxAmount: 10,
+        shippingAmount: shipping,
+        discountAmount: 0,
         notes: formData.notes,
         paymentMethod: formData.paymentMethod,
         shippingAddress: {
@@ -65,9 +73,8 @@ export default function CheckoutPage() {
           postalCode: formData.postalCode,
           country: "Bangladesh",
           phone: formData.phone,
-        },
+        }
       };
-      console.log(order);
       if (order.items.length === 0) {
         alert("Your cart is empty.");
         return;
@@ -90,10 +97,11 @@ export default function CheckoutPage() {
       if (response.ok) {
         // set url params
         const order = await response.json();
-        params.set("orderId", order.id);
+        params.set("orderId", order?.id);
+        toast.success("Order Created! #", order?.id)
         setStep(3);
       } else {
-        alert("Failed to place order. Please try again.");
+        toast.error("Failed to place order. Please try again.");
       }
     }
     // Final step would submit the order

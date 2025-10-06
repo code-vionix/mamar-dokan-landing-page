@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
-const OrderSummary = ({ totalAmount, isCheckingOut }) => {
+const OrderSummary = ({ totalAmount, isCheckingOut, isAllStockOut }) => {
   const router = useRouter();
 
   const handleCheckout = () => {
@@ -25,6 +25,10 @@ const OrderSummary = ({ totalAmount, isCheckingOut }) => {
             <div className="flex justify-between text-gray-600">
               <span className="font-bengali">শিপিং ফি</span>
               <span>{totalAmount >= 2000 ? "বিনামূল্যে" : "৳60"}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span className="font-bengali">ট্যাক্স</span>
+              <span>{"৳0"}</span>
             </div>
             <div className="flex justify-between text-gray-600 font-bengali">
               <span>ডিসকাউন্ট</span>
@@ -62,9 +66,9 @@ const OrderSummary = ({ totalAmount, isCheckingOut }) => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full bg-amber-600 text-white py-3 rounded-md font-bengali font-medium flex items-center justify-center hover:bg-amber-700 transition-colors"
+            className="w-full bg-amber-600 disabled:bg-gray-500 text-white py-3 rounded-md font-bengali font-medium flex items-center justify-center hover:bg-amber-700 transition-colors"
             onClick={handleCheckout}
-            disabled={isCheckingOut}
+            disabled={isCheckingOut || isAllStockOut}
           >
             {isCheckingOut ? (
               <>

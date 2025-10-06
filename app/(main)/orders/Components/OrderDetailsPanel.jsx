@@ -29,13 +29,13 @@ function OrderItemsList({ items }) {
             className="flex items-center py-3 border-b border-gray-100 last:border-0"
           >
             <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-              <Image
+              {item.image && <Image
                 src={item.image}
                 alt={item.name}
                 width={64}
                 height={64}
                 className="w-full h-full object-cover"
-              />
+              />}
             </div>
             <div className="ml-4 flex-grow">
               <h4 className="font-bengali font-medium">{item.name}</h4>
@@ -67,7 +67,7 @@ function OrderSummaryAndShipping({ order }) {
             <div className="flex justify-between py-1">
               <span className="text-gray-600 font-bengali">সাবটোটাল:</span>
               <span className="font-bengali">
-                ৳ {(order.total - 100).toLocaleString()}
+                ৳ {(order.totalAmount - 100).toLocaleString()}
               </span>
             </div>
             {/* Shipping Charge */}
@@ -79,7 +79,7 @@ function OrderSummaryAndShipping({ order }) {
             <div className="flex justify-between py-2 font-medium  mt-2 pt-2">
               <span className="font-bengali text-lg">মোট:</span>
               <span className="font-bengali text-lg text-amber-600">
-                ৳ {order.total.toLocaleString()}
+                ৳ {order.totalAmount?.toLocaleString()}
               </span>
             </div>
           </div>
@@ -108,13 +108,13 @@ function OrderSummaryAndShipping({ order }) {
         </h4>
         <div className="bg-gray-50 p-4 rounded-md">
           <div className="space-y-2">
-            <p className="font-bengali font-medium">{order.address.name}</p>
+            <p className="font-bengali font-medium">{order.shippingAddress.firstName}{" "}{order.shippingAddress.lastName}</p>
             <p className="text-gray-700 font-bengali">
-              {order.address.address}
+              {order.shippingAddress.addressLine1}
             </p>
-            <p className="text-gray-700 font-bengali">{order.address.city}</p>
+            <p className="text-gray-700 font-bengali">{order.shippingAddress.city}</p>
             <p className="text-gray-700 font-bengali">
-              ফোন: {order.address.phone}
+              ফোন: {order.shippingAddress?.phone}
             </p>
           </div>
         </div>
@@ -247,7 +247,7 @@ export default function OrderDetailsPanel({ order }) {
   return (
     <>
       {/* Information Tabs Placeholder */}
-      <div className="p-4 bg-amber-50/60">
+      {/* <div className="p-4 bg-amber-50/60">
         <div className="flex flex-nowrap overflow-x-auto space-x-2 pb-2 -mx-1 px-1">
           <div className="bg-white px-4 py-2 rounded-md shadow-sm flex items-center space-x-1 border border-amber-300">
             <FileText className="w-4 h-4 text-amber-700" />
@@ -270,12 +270,12 @@ export default function OrderDetailsPanel({ order }) {
             </span>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <OrderItemsList items={order.items} />
       <OrderSummaryAndShipping order={order} />
       <OrderTracking trackingInfo={order.trackingInfo} />
-      <ActionButtons order={order} />
+      {/* <ActionButtons order={order} /> */}
     </>
   );
 }

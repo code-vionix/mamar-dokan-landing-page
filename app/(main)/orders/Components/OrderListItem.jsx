@@ -2,6 +2,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Calendar, ChevronDown } from "lucide-react";
 import {
+  formattedDate,
   getStatusBgColor,
   getStatusColor,
   getStatusIcon,
@@ -14,7 +15,7 @@ export default function OrderListItem({
   toggleOrderDetails,
 }) {
   const isSelected = selectedOrder === order.id;
-
+console.log(order)
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       {/* Order Header (Summary) */}
@@ -27,7 +28,7 @@ export default function OrderListItem({
         <div className="flex items-center">
           <div
             className={`h-12 w-12 rounded-full flex items-center justify-center mr-4 ${getStatusBgColor(
-              order.status
+              order.status.toLowerCase()
             )}`}
           >
             {getStatusIcon(order.status)}
@@ -39,18 +40,18 @@ export default function OrderListItem({
               </h3>
               <span
                 className={`ml-3 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                  order.status
+                  order.status.toLowerCase()
                 )}`}
               >
-                {order.statusText}
+                {order.status}
               </span>
             </div>
             <div className="flex items-center text-sm text-gray-500">
               <Calendar className="w-3.5 h-3.5 mr-1.5" />
-              <span>{order.date}</span>
+              <span>{formattedDate(order.createdAt)}</span>
               <span className="mx-2">•</span>
               <span className="font-bengali font-medium text-gray-700">
-                ৳ {order.total.toLocaleString()}
+                ৳ {order.totalAmount?.toLocaleString()}
               </span>
             </div>
           </div>

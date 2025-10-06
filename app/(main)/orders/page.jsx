@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import Breadcrumb from "../components/common/Breadcrumb";
 import Hero from "../components/common/Hero";
 import OrdersClient from "./Components/OrdersClient";
@@ -11,8 +12,13 @@ async function getOrders() {
 
 export default async function OrdersPage() {
   // 1. Data Fetching (Server-side)
-  const orders = await getOrders();
-
+  const {user} = await auth()
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/user/${user.id}`
+  );
+  const data = await response.json();
+  const orders = data.data;
+console.log(orders)
   return (
     <div className="min-h-screen bg-amber-50/30">
       <Hero

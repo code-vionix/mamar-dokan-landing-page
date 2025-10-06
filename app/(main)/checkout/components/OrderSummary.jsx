@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Clock, ShieldCheck, Truck } from "lucide-react";
 
 const OrderSummary = ({ cartItems, subtotal, total, shipping }) => {
+
   return (
     <div className="w-full lg:w-1/3">
       <div className="bg-white p-6 rounded-xl shadow-sm sticky top-6">
@@ -36,7 +37,7 @@ const OrderSummary = ({ cartItems, subtotal, total, shipping }) => {
                     সংখ্যা: {item.quantity}
                   </p>
                   <p className="text-sm font-semibold font-bengali">
-                    ৳ {item.discountPrice?.toLocaleString()}
+                    ৳ {item.salePrice?.toLocaleString() * item.quantity}
                   </p>
                 </div>
               </div>

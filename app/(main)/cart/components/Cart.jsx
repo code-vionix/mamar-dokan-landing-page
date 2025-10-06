@@ -18,6 +18,8 @@ const Cart = () => {
     isLoaded,
   } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const filteredStockItems = cartItems.filter(item=>item.stock[0].quantity > 0);
+  const isAllStockOut = filteredStockItems.length < 1;
 
   const handleQuantityChange = (id, currentQuantity, change) => {
     const newQuantity = currentQuantity + change;
@@ -59,6 +61,7 @@ const Cart = () => {
               <OrderSummary
                 totalAmount={totalAmount}
                 isCheckingOut={isCheckingOut}
+                isAllStockOut={isAllStockOut}
               />
             </div>
           )}

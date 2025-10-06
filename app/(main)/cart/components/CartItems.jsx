@@ -29,8 +29,9 @@ const CartItems = ({
             {cartItems?.map((item, index) => (
               <li
                 key={item?.id + index}
-                className="py-6 flex flex-wrap md:flex-nowrap"
+                className={`py-6 flex flex-wrap md:flex-nowrap relative ${item.stock[0].quantity < 1 && "border rounded-sm bg-red-100 border-red-400 px-3 mt-1"}`}
               >
+                {item.stock[0].quantity < 1 && <span className="absolute top-2 left-2 bg-red-600 text-white text-xs rounded-full px-3 py-1 z-10 font-semibold">Stock Out</span>}
                 <div className="md:w-1/5 mb-4 md:mb-0">
                   <div className="relative h-24 w-20 md:h-32 md:w-28 bg-gray-100 rounded-md overflow-hidden">
                     <Image
