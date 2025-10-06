@@ -79,10 +79,17 @@ const StepThree = ({ step, formData }) => {
         </p>
 
         <div className="flex flex-col md:flex-row gap-4 justify-center">
-          <Link href="/track-order" className="flex-1 md:flex-initial">
+          {/* <Link href="/track-order" className="flex-1 md:flex-initial">
             <button className="w-full md:w-auto px-8 py-3 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-md transition-colors flex items-center justify-center font-bengali">
               <Package className="mr-2 h-5 w-5" />
               অর্ডার ট্র্যাক করুন
+            </button>
+          </Link> */}
+          
+          <Link href="/orders" className="flex-1 md:flex-initial">
+            <button className="w-full md:w-auto px-8 py-3 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-md transition-colors flex items-center justify-center font-bengali">
+              <Package className="mr-2 h-5 w-5" />
+              মাই অর্ডারস
             </button>
           </Link>
 

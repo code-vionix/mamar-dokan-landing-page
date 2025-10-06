@@ -3,7 +3,7 @@ import UploadImage from "./UploadImage";
 
 const paymentMethod = [
   {
-    name: "cash",
+    name: "COD",
     icon: <Banknote className="w-5 h-5 mr-2 text-gray-600" />,
     title: "ক্যাশ অন ডেলিভারি",
   },
@@ -91,7 +91,7 @@ const StepTwo = ({
         </div>
 
         {/* Upload ScreenShot */}
-        {formData.paymentMethod !== "cash" && (
+        {formData.paymentMethod !== "COD" && (
           <UploadImage setFormData={setFormData} />
         )}
 

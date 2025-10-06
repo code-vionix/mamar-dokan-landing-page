@@ -117,3 +117,15 @@ export function getTrackingStatusText(status) {
       return "";
   }
 }
+
+export const formattedDate = (isoDate = "") => {
+  if (!isoDate) return;
+  const date = new Date(isoDate);
+
+  const formatted = date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+  return formatted;
+};

@@ -1,6 +1,7 @@
 import { SessionProvider } from "next-auth/react";
 import { Hind_Siliguri, Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const hindSiliguri = Hind_Siliguri({
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
         <SessionProvider>
           <main className="flex-grow">{children}</main>
         </SessionProvider>
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );
