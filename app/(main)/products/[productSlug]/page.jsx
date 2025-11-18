@@ -8,7 +8,7 @@ const producductsDetailspage = async ({ params, searchParams }) => {
   const { tab } = await searchParams;
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/slug/${productSlug}`
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${productSlug}`
   );
   const data = await response.json();
   const product = data.data;
