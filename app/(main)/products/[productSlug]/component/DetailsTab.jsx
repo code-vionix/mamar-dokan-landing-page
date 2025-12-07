@@ -46,7 +46,7 @@ const DetailsTab = ({ product, Tab }) => {
         {activeTab === "specifications" && (
           <SpecificationsTab product={product} />
         )}
-        {activeTab === "reviews" && <ReviewsTab productId={productId} />}
+        {activeTab === "reviews" && <ReviewsTab productId={product.id} />}
         {activeTab === "shipping" && <ShippingTab />}
       </div>
     </div>
