@@ -1,5 +1,5 @@
-import React from 'react'
 
+import Link from 'next/link'
 const ContractBreadCrumb = () => {
   return (
     <div className="container mx-auto px-6 py-4 text-sm">
