@@ -1,9 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Plus, Save, Settings, Trash2, X } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import AddressForm from "./AddressForm";
+import AddressList from "./AddressList";
+import DeleteConfirmModal from "./DeleteConfirmModal";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -11,29 +13,11 @@ export default function AddressSection({ userId, onSetShowSuccess }) {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const [editingAddressId, setEditingAddressId] = useState(null);
+  const [editingAddress, setEditingAddress] = useState(null);
   const [deletingAddressId, setDeletingAddressId] = useState(null);
-
-  const methods = useForm({
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      phone: "",
-      addressLine1: "",
-      addressLine2: "",
-      city: "",
-      postalCode: "1000",
-      country: "BD",
-      isDefault: false,
-    },
-  });
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = methods;
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   /* =======================
      API FUNCTIONS
@@ -72,7 +56,14 @@ export default function AddressSection({ userId, onSetShowSuccess }) {
         body: JSON.stringify(payload),
       });
 
-      return await res.json();
+      const result = await res.json();
+      
+      // Update state with new address instead of refetching
+      if (result?.data) {
+        setAddresses((prev) => [...prev, result.data]);
+      }
+      
+      return result;
     } catch (err) {
       console.error("Create Error:", err);
     } finally {
@@ -85,13 +76,24 @@ export default function AddressSection({ userId, onSetShowSuccess }) {
       ...data,
       addressLine2: data.addressLine2 || "",
     };
+    
     try {
       const res = await fetch(`${API_URL}/user/address/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      return await res.json();
+      
+      const result = await res.json();
+      
+      // Update state with modified address instead of refetching
+      if (result?.data) {
+        setAddresses((prev) =>
+          prev.map((addr) => (addr.id === id ? result.data : addr))
+        );
+      }
+      
+      return result;
     } catch (err) {
       console.error("Update Error:", err);
     } finally {
@@ -104,7 +106,13 @@ export default function AddressSection({ userId, onSetShowSuccess }) {
       const res = await fetch(`${API_URL}/user/address/${id}`, {
         method: "DELETE",
       });
-      return await res.json();
+      
+      const result = await res.json();
+      
+      // Update state by removing deleted address instead of refetching
+      setAddresses((prev) => prev.filter((addr) => addr.id !== id));
+      
+      return result;
     } catch (err) {
       console.error("Delete Error:", err);
     } finally {
@@ -117,42 +125,58 @@ export default function AddressSection({ userId, onSetShowSuccess }) {
   ======================== */
   const handleAddressSubmit = useCallback(
     async (data) => {
-      if (editingAddressId) {
-        await updateAddress(editingAddressId, data);
-      } else {
-        await createAddress(data);
+      setIsSubmitting(true);
+      try {
+        if (editingAddress) {
+          await updateAddress(editingAddress.id, data);
+        } else {
+          await createAddress(data);
+        }
+        setShowAddressForm(false);
+        setEditingAddress(null);
+      } finally {
+        setIsSubmitting(false);
       }
-      await fetchAddresses();
-      setShowAddressForm(false);
-      setEditingAddressId(null);
-      reset();
     },
-    [editingAddressId, reset]
+    [editingAddress]
   );
 
   const handleEditAddress = (address) => {
-    setEditingAddressId(address.id);
-    reset({
-      firstName: address.firstName,
-      lastName: address.lastName,
-      phone: address.phone,
-      addressLine1: address.addressLine1,
-      addressLine2: address.addressLine2 || "",
-      city: address.city,
-      postalCode: address.postalCode || "1000",
-      country: address.country || "BD",
-      isDefault: address.isDefault,
-    });
+    setEditingAddress(address);
     setShowAddressForm(true);
   };
 
-  const handleDeleteAddress = useCallback(async (id) => {
-    setDeletingAddressId(id);
-    await deleteAddress(id);
-    await fetchAddresses();
-    setDeletingAddressId(null);
-  }, []);
+  const handleDeleteAddress = (address) => {
+    setAddressToDelete(address);
+    setShowDeleteModal(true);
+  };
 
+  const confirmDelete = async () => {
+    if (!addressToDelete) return;
+
+    setDeletingAddressId(addressToDelete.id);
+    await deleteAddress(addressToDelete.id);
+    setDeletingAddressId(null);
+    setShowDeleteModal(false);
+    setAddressToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setAddressToDelete(null);
+  };
+
+  const handleCancelForm = () => {
+    setShowAddressForm(false);
+    setEditingAddress(null);
+  };
+
+  const handleAddNew = () => {
+    setShowAddressForm(true);
+    setEditingAddress(null);
+  };
+
+  // Fetch addresses only on mount
   useEffect(() => {
     fetchAddresses();
   }, []);
@@ -172,11 +196,7 @@ export default function AddressSection({ userId, onSetShowSuccess }) {
 
       {!showAddressForm && (
         <button
-          onClick={() => {
-            setShowAddressForm(true);
-            setEditingAddressId(null);
-            reset();
-          }}
+          onClick={handleAddNew}
           className="mb-6 bg-amber-600 text-white px-4 py-2 rounded-md hover:bg-amber-700 transition-colors font-bengali flex items-center"
         >
           <Plus className="h-4 w-4 mr-2" /> নতুন ঠিকানা যোগ করুন
@@ -184,281 +204,30 @@ export default function AddressSection({ userId, onSetShowSuccess }) {
       )}
 
       {showAddressForm && (
-        <div className="bg-amber-50/50 rounded-lg p-6 mb-6 border border-amber-100">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bengali text-lg font-medium text-amber-800">
-              {editingAddressId
-                ? "ঠিকানা পরিবর্তন করুন"
-                : "নতুন ঠিকানা যোগ করুন"}
-            </h3>
-            <button
-              onClick={() => {
-                setShowAddressForm(false);
-                setEditingAddressId(null);
-              }}
-              className="text-gray-500 hover:text-gray-700 cursor-pointer"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-
-          <FormProvider {...methods}>
-            <form
-              onSubmit={handleSubmit(handleAddressSubmit)}
-              className="space-y-4"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* First Name */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 font-bengali">
-                    নাম <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    {...register("firstName", {
-                      required: "নাম অবশ্যই দিতে হবে",
-                    })}
-                    className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-amber-500"
-                  />
-                  {errors.firstName && (
-                    <p className="text-sm text-red-500 mt-1 font-bengali">
-                      {errors.firstName.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Last Name */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 font-bengali">
-                    শেষ নাম <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    {...register("lastName", {
-                      required: "শেষ নাম অবশ্যই দিতে হবে",
-                    })}
-                    className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-amber-500"
-                  />
-                  {errors.lastName && (
-                    <p className="text-sm text-red-500 mt-1 font-bengali">
-                      {errors.lastName.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Phone */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 font-bengali">
-                    ফোন <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    {...register("phone", {
-                      required: "ফোন নম্বর অবশ্যই দিতে হবে",
-                    })}
-                    className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-amber-500"
-                  />
-                  {errors.phone && (
-                    <p className="text-sm text-red-500 mt-1 font-bengali">
-                      {errors.phone.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* City */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 font-bengali">
-                    শহর/জেলা <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    {...register("city", {
-                      required: "শহর/জেলা অবশ্যই দিতে হবে",
-                    })}
-                    className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-amber-500"
-                  />
-                  {errors.city && (
-                    <p className="text-sm text-red-500 mt-1 font-bengali">
-                      {errors.city.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Postal Code */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 font-bengali">
-                    পোস্টাল কোড <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    {...register("postalCode", {
-                      required: "পোস্টাল কোড অবশ্যই দিতে হবে",
-                    })}
-                    className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-amber-500"
-                  />
-                  {errors.postalCode && (
-                    <p className="text-sm text-red-500 mt-1 font-bengali">
-                      {errors.postalCode.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Country */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 font-bengali">
-                    দেশ <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    {...register("country", {
-                      required: "দেশ অবশ্যই দিতে হবে",
-                    })}
-                    className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-amber-500"
-                  />
-                  {errors.country && (
-                    <p className="text-sm text-red-500 mt-1 font-bengali">
-                      {errors.country.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Address Line */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1 font-bengali">
-                  ঠিকানা <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  {...register("addressLine1", {
-                    required: "ঠিকানা অবশ্যই দিতে হবে",
-                  })}
-                  className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-amber-500"
-                />
-                {errors.addressLine1 && (
-                  <p className="text-sm text-red-500 mt-1 font-bengali">
-                    {errors.addressLine1.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Address Line 2 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1 font-bengali">
-                  ঠিকানা ২
-                </label>
-                <input
-                  type="text"
-                  {...register("addressLine2")}
-                  className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-amber-500"
-                />
-              </div>
-
-              {/* Default Checkbox */}
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  {...register("isDefault")}
-                  className="rounded text-amber-600 h-4 w-4"
-                />
-                <span className="font-bengali text-sm">
-                  এটিকে ডিফল্ট ঠিকানা হিসেবে সেট করুন
-                </span>
-              </div>
-
-              {/* Buttons */}
-              <div className="flex space-x-2 mt-4">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="bg-amber-600 text-white px-6 py-2 rounded-md flex items-center hover:bg-amber-700"
-                >
-                  {isSubmitting ? (
-                    <span className="inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
-                  ) : (
-                    <Save className="h-4 w-4 mr-2" />
-                  )}
-                  সংরক্ষণ করুন
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddressForm(false);
-                    setEditingAddressId(null);
-                    reset();
-                  }}
-                  className="border border-gray-300 px-6 py-2 rounded-md hover:bg-gray-50 font-bengali"
-                >
-                  বাতিল করুন
-                </button>
-              </div>
-            </form>
-          </FormProvider>
-        </div>
+        <AddressForm
+          editingAddress={editingAddress}
+          onSubmit={handleAddressSubmit}
+          onCancel={handleCancelForm}
+          isSubmitting={isSubmitting}
+        />
       )}
 
-      {loading ? (
-        <p className="text-gray-500">লোড হচ্ছে...</p>
-      ) : (
-        <div className="space-y-4">
-          {addresses.map((address) => (
-            <div
-              key={address.id}
-              className="border rounded-lg p-4 hover:border-amber-200 transition-colors"
-            >
-              <div className="flex justify-between">
-                <h3 className="font-bengali font-medium">
-                  {address.firstName} {address.lastName}{" "}
-                  {address.isDefault && (
-                    <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full ml-2">
-                      ডিফল্ট
-                    </span>
-                  )}
-                </h3>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleEditAddress(address)}
-                    className="text-gray-500 hover:text-amber-600"
-                  >
-                    <Settings size={16} />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteAddress(address.id)}
-                    disabled={deletingAddressId === address.id}
-                    className="text-gray-500 hover:text-red-600"
-                  >
-                    {deletingAddressId === address.id ? (
-                      <span className="inline-block h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></span>
-                    ) : (
-                      <Trash2 size={16} />
-                    )}
-                  </button>
-                </div>
-              </div>
-              <p className="text-sm text-gray-600 mt-1 font-bengali">
-                {address.addressLine1}
-              </p>
-              {address.addressLine2 && (
-                <p className="text-sm text-gray-600 font-bengali">
-                  {address.addressLine2}
-                </p>
-              )}
-              <p className="text-sm text-gray-600 font-bengali">
-                {address.city}
-              </p>
-              <p className="text-sm text-gray-600 font-bengali">
-                পোস্টাল কোড: {address.postalCode}
-              </p>
-              <p className="text-sm text-gray-600 font-bengali">
-                দেশ: {address.country}
-              </p>
-              <p className="text-sm text-gray-600 mt-2 font-bengali">
-                ফোন: {address.phone}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        address={addressToDelete}
+        isDeleting={deletingAddressId === addressToDelete?.id}
+      />
+
+      <AddressList
+        addresses={addresses}
+        loading={loading}
+        onEdit={handleEditAddress}
+        onDelete={handleDeleteAddress}
+        deletingAddressId={deletingAddressId}
+      />
     </motion.div>
   );
 }

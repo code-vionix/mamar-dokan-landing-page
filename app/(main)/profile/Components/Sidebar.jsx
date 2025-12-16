@@ -1,4 +1,4 @@
-"use client";
+
 
 import { Camera } from "lucide-react";
 import Image from "next/image";
@@ -6,6 +6,7 @@ import Link from "next/link";
 import { navItems } from "../data/navItemData";
 
 export default function Sidebar({ profileData, activeTab, setActiveTab }) {
+
   return (
     <div className="w-full lg:w-1/4">
       {/* Profile Section */}
@@ -13,7 +14,7 @@ export default function Sidebar({ profileData, activeTab, setActiveTab }) {
         <div className="flex items-center p-2">
           <div className="relative mr-4">
             <Image
-              src={profileData?.profileImage || "/placeholder.png"}
+              src={profileData?.avatar || "/placeholder.png"}
               alt={profileData?.name || "Profile Image"}
               width={100}
               height={100}
