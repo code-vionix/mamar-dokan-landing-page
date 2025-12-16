@@ -4,47 +4,27 @@ import { motion } from "framer-motion";
 import { Camera, Mail, Phone, Save, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export default function ProfileSection({ onSetShowSuccess }) {
-  const { data: session, status } = useSession();
-  const user = session?.user;
+export default function ProfileSection({ onSetShowSuccess, userData, setUserData }) {
+  const { status } = useSession();
   const fileInputRef = useRef(null);
-
-  // profile state
-  const [profile, setProfile] = useState({
-    id: "",
-    name: "",
-    email: "",
-    phone: "",
-    profileImage: null,
-  });
 
   const [isLoading, setIsLoading] = useState(false);
   const [isImageUploading, setIsImageUploading] = useState(false);
   const [apiError, setApiError] = useState(null);
 
-  // user data load
-  useEffect(() => {
-    if (user) {
-      setProfile({
-        id: user?.id || "",
-        name: user?.name || "",
-        email: user?.email || "",
-        phone: user?.phone || "",
-        profileImage: user?.image || null,
-      });
-    }
-  }, [user]);
-
   // input handler
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
-    setProfile((prev) => ({
+    setUserData((prev) => ({
       ...prev,
-      [name]: value,
+      user: {
+        ...prev.user,
+        [name]: value,
+      },
     }));
   };
 
@@ -55,14 +35,14 @@ export default function ProfileSection({ onSetShowSuccess }) {
     setApiError(null);
 
     try {
-      const response = await fetch(`${API_URL}/user/${profile.id}`, {
+      const response = await fetch(`${API_URL}/user/${userData.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: profile.name,
-          phone: profile.phone,
+          name: userData.name,
+          phone: userData.phone,
         }),
       });
 
@@ -92,20 +72,21 @@ export default function ProfileSection({ onSetShowSuccess }) {
       const formData = new FormData();
       formData.append("image", file);
 
-      const response = await fetch(`${API_URL}/user/${profile.id}/avatar`, {
+      const response = await fetch(`${API_URL}/user/${userData.id}/avatar`, {
         method: "PATCH",
-        // headers: {
-        //   Authorization: `Bearer ${session?.user?.accessToken}`,
-        // },
         body: formData,
       });
 
       const result = await response.json();
 
       if (response.ok && result.success) {
-        setProfile((prev) => ({
+        // Update parent state with new avatar
+        setUserData((prev) => ({
           ...prev,
-          profileImage: result.data.avatarUrl,
+          user: {
+            ...prev.user,
+            avatar: result.data.avatarUrl,
+          },
         }));
       } else {
         setApiError(result.message || "ইমেজ আপলোড ব্যর্থ হয়েছে।");
@@ -121,14 +102,20 @@ export default function ProfileSection({ onSetShowSuccess }) {
 
   // remove image
   const handleRemoveImage = () => {
-    setProfile((prev) => ({ ...prev, profileImage: null }));
+    setUserData((prev) => ({
+      ...prev,
+      user: {
+        ...prev.user,
+        avatar: null,
+      },
+    }));
   };
 
   if (status === "loading") {
     return <p className="text-gray-500">লোড হচ্ছে...</p>;
   }
 
-  if (!user) {
+  if (!userData) {
     return <p className="text-gray-500">লগইন করার পর প্রোফাইল দেখা যাবে</p>;
   }
 
@@ -146,8 +133,8 @@ export default function ProfileSection({ onSetShowSuccess }) {
       <div className="mb-6 flex flex-col md:flex-row items-start md:items-center gap-6">
         <div className="relative">
           <Image
-            src={profile.profileImage || "/placeholder.png"}
-            alt={profile.name || "Profile Image"}
+            src={userData?.avatar || "/placeholder.png"}
+            alt={userData?.name || "Profile Image"}
             width={100}
             height={100}
             className="rounded-full border-2 border-amber-200 object-cover"
@@ -213,7 +200,7 @@ export default function ProfileSection({ onSetShowSuccess }) {
               type="text"
               id="name"
               name="name"
-              value={profile.name || ""}
+              value={userData?.name || ""}
               onChange={handleProfileChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
               required
@@ -233,7 +220,7 @@ export default function ProfileSection({ onSetShowSuccess }) {
                 type="email"
                 id="email"
                 name="email"
-                value={profile.email || ""}
+                value={userData?.email || ""}
                 disabled
                 className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
               />
@@ -254,7 +241,7 @@ export default function ProfileSection({ onSetShowSuccess }) {
                 type="tel"
                 id="phone"
                 name="phone"
-                value={profile.phone || ""}
+                value={userData?.phone || ""}
                 onChange={handleProfileChange}
                 className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
                 required

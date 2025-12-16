@@ -6,8 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import FormInput from "./FormInput";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL; // example: "https://api.example.com"
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL; 
 export default function PasswordSection({ userId, onSetShowSuccess }) {
   const {
     register,

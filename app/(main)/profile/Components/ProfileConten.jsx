@@ -2,60 +2,85 @@
 
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { useCallback, useState } from "react";
-
 import { redirect } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+
 import AddressSection from "./AddressSection";
-import NotificationSection from "./NotificationSection";
+// import NotificationSection from "./NotificationSection";
 import PasswordSection from "./PasswordSection";
-import PaymentSection from "./PaymentSection";
-import PrivacySection from "./PrivacySection";
+// import PaymentSection from "./PaymentSection";
+// import PrivacySection from "./PrivacySection";
 import ProfileSection from "./ProfileSection";
 import Sidebar from "./Sidebar";
 import SuccessMessage from "./SuccessMessage";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export default function ProfileContent({ initialData }) {
+
+import mapApiUserToUI from "../lib/mapApiUserToUI.js";
+
+export default function ProfileContent() {
   const { data: session, status } = useSession();
-  // login user check
 
   if (status === "unauthenticated") {
     redirect("/login");
   }
-  const [userData, setUserData] = useState(initialData || {});
+
+  const [userData, setUserData] = useState(null);
   const [activeTab, setActiveTab] = useState("profile");
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Child update handler
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(
+          `${API_URL}/user/${session.user.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${session.user.accessToken}`,
+            },
+          }
+        );
+
+        const json = await res.json();
+        const mappedData = mapApiUserToUI(json.data);
+
+        setUserData(mappedData);
+      } catch (error) {
+        console.error("Failed to fetch user", error);
+      }
+    };
+
+    fetchUser();
+  }, [session]);
+
   const handleDataUpdate = useCallback((newData) => {
     setUserData((prev) => ({ ...prev, ...newData }));
     setShowSuccess(true);
-    console.log("Data updated. Ideally re-fetch from server.");
   }, []);
 
-  const handleDismissSuccess = useCallback(() => {
-    setShowSuccess(false);
-  }, []);
+  if (!userData) {
+    return <div className="p-6">Loading profile...</div>;
+  }
 
   return (
     <>
       <SuccessMessage
         message="সফলভাবে আপডেট করা হয়েছে!"
         isVisible={showSuccess}
-        onDismiss={handleDismissSuccess}
+        onDismiss={() => setShowSuccess(false)}
       />
 
       <div className="container mx-auto px-6 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar */}
           <Sidebar
             profileData={userData.user}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
 
-          {/* Content Area */}
           <div className="w-full lg:w-3/4">
             <div className="bg-white rounded-xl shadow-sm p-6">
               <motion.div
@@ -65,38 +90,48 @@ export default function ProfileContent({ initialData }) {
                 transition={{ duration: 0.3 }}
               >
                 {activeTab === "profile" && (
-                  <ProfileSection onSetShowSuccess={setShowSuccess} />
+                  <ProfileSection
+                    userData={userData.user}
+                    onSetShowSuccess={setShowSuccess}
+                    setUserData={setUserData}
+                  />
                 )}
+
                 {activeTab === "password" && (
                   <PasswordSection
-                    userId={session?.user?.id}
+                    userId={session.user.id}
                     onSetShowSuccess={setShowSuccess}
                   />
                 )}
-                {activeTab === "notifications" && (
+
+                {/* {activeTab === "notifications" && (
                   <NotificationSection
-                    initialData={userData.notifications || {}}
+                    initialData={userData.notifications}
                     onSave={handleDataUpdate}
                   />
-                )}
+                )} */}
+
                 {activeTab === "addresses" && (
                   <AddressSection
-                    userId={session?.user?.id}
+                    propsAddresses={userData.addresses}
+                    userId={session.user.id}
                     onSetShowSuccess={setShowSuccess}
                   />
                 )}
-                {activeTab === "payment" && (
+
+                {/* {activeTab === "payment" && (
                   <PaymentSection
-                    initialData={userData.paymentMethods || []}
+                    initialData={userData.paymentMethods}
                     onSave={handleDataUpdate}
                   />
-                )}
-                {activeTab === "privacy" && (
+                )} */}
+
+                {/* {activeTab === "privacy" && (
                   <PrivacySection
-                    initialData={userData.privacy || {}}
+                    initialData={userData.privacy}
                     onSave={handleDataUpdate}
                   />
-                )}
+                )} */}
               </motion.div>
             </div>
           </div>
