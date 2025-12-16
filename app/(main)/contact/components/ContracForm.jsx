@@ -1,6 +1,7 @@
-import React from "react";
+'use client'
 import { motion } from "framer-motion";
 import { CheckCircle, Send } from "lucide-react";
+import { useState } from "react";
 
 const ContracForm = () => {
   const [formData, setFormData] = useState({
