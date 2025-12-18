@@ -36,8 +36,6 @@ export default function Products({ products }) {
 
   const [loading, setLoading] = useState(true);
 
-
-
   const error = null;
 
   // const products = mockProducts;
@@ -239,7 +237,6 @@ export default function Products({ products }) {
             renderRatingStars={renderRatingStars}
             setQuickViewProduct={setQuickViewProduct}
             setFavorites={setFavorites}
-            
           />
         </div>
       </div>

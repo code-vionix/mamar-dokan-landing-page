@@ -1,15 +1,16 @@
 "use client";
 import { useCart } from "@/lib/cart";
 import { motion } from "framer-motion";
-import { CheckCircle, Share2, ShoppingCart } from "lucide-react";
-import { useState } from "react";
+import { CheckCircle, Loader2, Share2, ShoppingCart } from "lucide-react";
+import { use, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 const UserActionSection = ({ product }) => {
   const [colorChoice, setColorChoice] = useState("সাদা এবং নীল");
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const totalStock = product.stock?.[0]?.quantity;
-  const { addToCart } = useCart();
+  const { addToCart, isLoading, cartItems } = useCart();
 
   // Handle quantity changes
   const handleQuantityChange = (newQuantity) => {
@@ -17,6 +18,10 @@ const UserActionSection = ({ product }) => {
       setQuantity(newQuantity);
     }
   };
+
+  const existsInCart = useMemo(() => {
+    return cartItems.filter((p) => p.id.includes(product.id));
+  }, [product, cartItems]);
 
   return (
     <>
@@ -107,15 +112,31 @@ const UserActionSection = ({ product }) => {
         </div>
 
         <div className="flex space-x-2">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => addToCart({ ...product, quantity })}
-            className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-3 px-6 rounded-md font-bengali flex items-center justify-center"
-          >
-            <ShoppingCart className="h-5 w-5 mr-2" />
-            <span>কার্টে যোগ করুন</span>
-          </motion.button>
+          <div>
+            {isLoading ? (
+              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+            ) : (
+              <>
+                {existsInCart.length > 0 ? (
+                  <button className="cursor-pointer bg-amber-600 hover:bg-amber-700 active:scale-90 text-white px-3 py-2 rounded-md font-bengali flex items-center justify-center flex-1 transition-colors">
+                    <CheckCircle className="h-5 w-5 mr-2" />
+                    <span>কার্টে যোগ করা হয়েছে</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      addToCart({ ...product, quantity: 1 });
+                      toast.success("Product added in cart!");
+                    }}
+                    className="cursor-pointer bg-amber-600 hover:bg-amber-700 active:scale-90 text-white px-3 py-2 rounded-md font-bengali flex items-center justify-center flex-1 transition-colors"
+                  >
+                    <ShoppingCart className="h-5 w-5 mr-2" />
+                    <span>কার্টে যোগ করুন</span>
+                  </button>
+                )}
+              </>
+            )}
+          </div>
 
           <motion.button
             whileHover={{ scale: 1.02 }}

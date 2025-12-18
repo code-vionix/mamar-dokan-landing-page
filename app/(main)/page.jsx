@@ -40,7 +40,7 @@ export default async function Home() {
       <HeritageSection />
 
       {/* === Instagram Feed Section === */}
-      <InstagramFeed />
+      {/* <InstagramFeed /> */}
 
       {/* Newsletter Section */}
       <Newsletter />

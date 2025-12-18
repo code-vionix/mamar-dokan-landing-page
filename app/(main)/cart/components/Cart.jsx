@@ -18,8 +18,10 @@ const Cart = () => {
     isLoaded,
   } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const filteredStockItems = cartItems.filter(item=>item.stock[0].quantity > 0);
+  const filteredStockItems = cartItems.filter(item=>item?.stock?.[0]?.quantity > 0);
   const isAllStockOut = filteredStockItems.length < 1;
+
+  console.log("cartItems", cartItems);
 
   const handleQuantityChange = (id, currentQuantity, change) => {
     const newQuantity = currentQuantity + change;

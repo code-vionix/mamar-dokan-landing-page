@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const CartContext = createContext(undefined);
 
@@ -10,7 +11,7 @@ export function CartProvider({ children }) {
   const [totalItems, setTotalItems] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false); // Track if client-side code has loaded
-
+  const [isLoading, setIsLoading] = useState(false);
   // Load cart from localStorage only on the client side
   useEffect(() => {
     const savedCart = localStorage.getItem("jamdani-cart");
@@ -48,6 +49,7 @@ export function CartProvider({ children }) {
 
   // Add item to cart
   const addToCart = (item) => {
+    setIsLoading(true);
     setCartItems((prevItems) => {
       const existingItem = prevItems.find(
         (cartItem) => cartItem.id === item.id
@@ -63,24 +65,29 @@ export function CartProvider({ children }) {
         return [...prevItems, item];
       }
     });
+    setIsLoading(false);
   };
 
   // Remove item from cart
   const removeFromCart = (id) => {
+    setIsLoading(true);
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
 
     if (cartItems.length === 1) {
       localStorage.removeItem("jamdani-cart");
     }
+    setIsLoading(false);
   };
 
   // Update item quantity
   const updateQuantity = (id, quantity) => {
+    setIsLoading(true);
     if (quantity < 1) return;
 
     setCartItems((prevItems) =>
       prevItems.map((item) => (item.id === id ? { ...item, quantity } : item))
     );
+    setIsLoading(false);
   };
 
   // Clear entire cart
@@ -100,6 +107,7 @@ export function CartProvider({ children }) {
         totalItems,
         totalAmount,
         isLoaded,
+        isLoading,
       }}
     >
       {children}

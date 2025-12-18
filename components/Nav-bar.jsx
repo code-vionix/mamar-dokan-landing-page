@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { motion, AnimatePresence } from "framer-motion"
-import { usePathname } from "next/navigation"
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 import {
   ShoppingCart,
   Search,
@@ -23,114 +23,116 @@ import {
   Settings,
   Crown,
   Star,
-  Gift
-} from "lucide-react"
+  Gift,
+} from "lucide-react";
 
 // Mock user state - replace with your actual auth system
 const useAuth = () => {
   // Mock user data
-  const mockUser = { name: "আফিফা আহমেদ", email: "afifa@example.com" }
+  const mockUser = { name: "আফিফা আহমেদ", email: "afifa@example.com" };
 
   // Initialize with mock authentication state
-  const [isAuthenticated, setIsAuthenticated] = useState(true)
-  const [user, setUser] = useState(mockUser)
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [user, setUser] = useState(mockUser);
+  
 
   // Mock login function
-  const login = userData => {
-    setIsAuthenticated(true)
-    setUser(userData)
-  }
+  const login = (userData) => {
+    setIsAuthenticated(true);
+    setUser(userData);
+  };
 
   // Mock logout function
   const logout = () => {
-    setIsAuthenticated(false)
-    setUser(null)
-  }
+    setIsAuthenticated(false);
+    setUser(null);
+  };
 
-  return { isAuthenticated, user, login, logout }
-}
+  return { isAuthenticated, user, login, logout };
+};
 
 export default function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
-  const [activeMegaMenu, setActiveMegaMenu] = useState(null)
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
-  const pathname = usePathname()
-  const megaMenuRef = useRef(null)
-  const profileMenuRef = useRef(null)
-  const categoryMenuTimeout = useRef(null)
-  const { isAuthenticated, user, login, logout } = useAuth()
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [activeMegaMenu, setActiveMegaMenu] = useState(null);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const megaMenuRef = useRef(null);
+  const profileMenuRef = useRef(null);
+  const categoryMenuTimeout = useRef(null);
+  const { isAuthenticated, user, login, logout } = useAuth();
+  
 
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 10) {
-        setIsScrolled(true)
+        setIsScrolled(true);
       } else {
-        setIsScrolled(false)
+        setIsScrolled(false);
       }
-    }
+    };
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Close mobile menu when route changes
   useEffect(() => {
-    setIsMobileMenuOpen(false)
-    setSearchOpen(false)
-    setActiveMegaMenu(null)
-    setIsProfileMenuOpen(false)
-  }, [pathname])
+    setIsMobileMenuOpen(false);
+    setSearchOpen(false);
+    setActiveMegaMenu(null);
+    setIsProfileMenuOpen(false);
+  }, [pathname]);
 
   // Close mega menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = event => {
+    const handleClickOutside = (event) => {
       if (megaMenuRef.current && !megaMenuRef.current.contains(event.target)) {
-        setActiveMegaMenu(null)
+        setActiveMegaMenu(null);
       }
 
       if (
         profileMenuRef.current &&
         !profileMenuRef.current.contains(event.target)
       ) {
-        setIsProfileMenuOpen(false)
+        setIsProfileMenuOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  const handleCategoryMouseEnter = category => {
+  const handleCategoryMouseEnter = (category) => {
     if (categoryMenuTimeout.current) {
-      clearTimeout(categoryMenuTimeout.current)
+      clearTimeout(categoryMenuTimeout.current);
     }
-    setActiveMegaMenu(category)
-  }
+    setActiveMegaMenu(category);
+  };
 
   const handleCategoryMouseLeave = () => {
     categoryMenuTimeout.current = setTimeout(() => {
-      setActiveMegaMenu(null)
-    }, 300)
-  }
+      setActiveMegaMenu(null);
+    }, 300);
+  };
 
   const handleMegaMenuMouseEnter = () => {
     if (categoryMenuTimeout.current) {
-      clearTimeout(categoryMenuTimeout.current)
+      clearTimeout(categoryMenuTimeout.current);
     }
-  }
+  };
 
   const handleMegaMenuMouseLeave = () => {
     categoryMenuTimeout.current = setTimeout(() => {
-      setActiveMegaMenu(null)
-    }, 300)
-  }
+      setActiveMegaMenu(null);
+    }, 300);
+  };
 
   const handleLogout = () => {
-    logout()
-    setIsProfileMenuOpen(false)
-  }
+    logout();
+    setIsProfileMenuOpen(false);
+  };
 
   return (
     <>
@@ -346,7 +348,7 @@ export default function Navbar() {
                   <span>শাড়ি কালেকশন</span>
                   <motion.div
                     animate={{
-                      rotate: activeMegaMenu === "categories" ? 180 : 0
+                      rotate: activeMegaMenu === "categories" ? 180 : 0,
                     }}
                     transition={{ duration: 0.3 }}
                   >
@@ -386,20 +388,20 @@ export default function Navbar() {
                             {[
                               {
                                 href: "/products?category=premium",
-                                label: "প্রিমিয়াম জামদানি"
+                                label: "প্রিমিয়াম জামদানি",
                               },
                               {
                                 href: "/products?category=classic",
-                                label: "ক্লাসিক জামদানি"
+                                label: "ক্লাসিক জামদানি",
                               },
                               {
                                 href: "/products?material=রেশম",
-                                label: "রেশমি জামদানি"
+                                label: "রেশমি জামদানি",
                               },
                               {
                                 href: "/products?material=সুতি",
-                                label: "সুতি জামদানি"
-                              }
+                                label: "সুতি জামদানি",
+                              },
                             ].map((item, index) => (
                               <motion.li
                                 key={index}
@@ -428,16 +430,16 @@ export default function Navbar() {
                             {[
                               {
                                 href: "/products?occasion=wedding",
-                                label: "বিবাহ উপলক্ষে"
+                                label: "বিবাহ উপলক্ষে",
                               },
                               {
                                 href: "/products?occasion=festive",
-                                label: "উৎসব উপলক্ষে"
+                                label: "উৎসব উপলক্ষে",
                               },
                               {
                                 href: "/products?occasion=daily",
-                                label: "দৈনন্দিন ব্যবহারের"
-                              }
+                                label: "দৈনন্দিন ব্যবহারের",
+                              },
                             ].map((item, index) => (
                               <motion.li
                                 key={index}
@@ -527,7 +529,6 @@ export default function Navbar() {
                       : "text-gray-800 hover:text-amber-600"
                   } transition-all duration-300 group flex items-center`}
                 >
-                  <Gift className="w-4 h-4 mr-1" />
                   ছাড়ের অফার
                   <span
                     className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-amber-400 to-amber-600 transform ${
@@ -550,8 +551,8 @@ export default function Navbar() {
                 aria-label="Search"
               >
                 <Search className="w-5 h-5" />
+                
               </motion.button>
-
               <motion.div whileHover={{ scale: 1.05 }}>
                 <Link
                   href="/wishlist"
@@ -645,8 +646,8 @@ export default function Navbar() {
                             {
                               href: "/wishlist",
                               icon: Heart,
-                              label: "পছন্দের তালিকা"
-                            }
+                              label: "পছন্দের তালিকা",
+                            },
                           ].map((item, index) => (
                             <motion.div key={index} whileHover={{ x: 5 }}>
                               <Link
@@ -668,13 +669,13 @@ export default function Navbar() {
                             {
                               href: "/orders",
                               icon: ShoppingBag,
-                              label: "অর্ডার"
+                              label: "অর্ডার",
                             },
                             {
                               href: "/orders/tracking",
                               icon: MapPin,
-                              label: "অর্ডার ট্র্যাকিং"
-                            }
+                              label: "অর্ডার ট্র্যাকিং",
+                            },
                           ].map((item, index) => (
                             <motion.div key={index} whileHover={{ x: 5 }}>
                               <Link
@@ -696,9 +697,9 @@ export default function Navbar() {
                             {
                               href: "/settings",
                               icon: Settings,
-                              label: "সেটিংস"
+                              label: "সেটিংস",
                             },
-                            { href: "/help", icon: Phone, label: "সাহায্য" }
+                            { href: "/help", icon: Phone, label: "সাহায্য" },
                           ].map((item, index) => (
                             <motion.div key={index} whileHover={{ x: 5 }}>
                               <Link
@@ -835,7 +836,6 @@ export default function Navbar() {
               <div className="absolute inset-0 bg-gradient-to-r from-amber-50/50 to-orange-50/30"></div>
               <div className="relative container mx-auto p-6">
                 <div className="flex items-center bg-white rounded-xl shadow-lg border border-amber-200 overflow-hidden">
-                  <Search className="w-5 h-5 text-amber-500 ml-4" />
                   <input
                     type="text"
                     placeholder="শাড়ি খুঁজুন... (যেমন: জামদানি, রেশমি, প্রিমিয়াম)"
@@ -862,7 +862,7 @@ export default function Navbar() {
                     "প্রিমিয়াম জামদানি",
                     "রেশমি শাড়ি",
                     "বিবাহের শাড়ি",
-                    "ঈদ কালেকশন"
+                    "ঈদ কালেকশন",
                   ].map((term, index) => (
                     <motion.button
                       key={index}
@@ -954,7 +954,7 @@ export default function Navbar() {
                       <motion.div
                         animate={{
                           rotate:
-                            activeMegaMenu === "mobile-categories" ? 180 : 0
+                            activeMegaMenu === "mobile-categories" ? 180 : 0,
                         }}
                         transition={{ duration: 0.3 }}
                       >
@@ -974,20 +974,20 @@ export default function Navbar() {
                           {[
                             {
                               href: "/products?category=premium",
-                              label: "প্রিমিয়াম জামদানি"
+                              label: "প্রিমিয়াম জামদানি",
                             },
                             {
                               href: "/products?category=classic",
-                              label: "ক্লাসিক জামদানি"
+                              label: "ক্লাসিক জামদানি",
                             },
                             {
                               href: "/products?material=রেশম",
-                              label: "রেশমি জামদানি"
+                              label: "রেশমি জামদানি",
                             },
                             {
                               href: "/products?material=সুতি",
-                              label: "সুতি জামদানি"
-                            }
+                              label: "সুতি জামদানি",
+                            },
                           ].map((item, index) => (
                             <motion.div
                               key={index}
@@ -1083,10 +1083,10 @@ export default function Navbar() {
                       {
                         href: "/track-order",
                         label: "অর্ডার ট্র্যাকিং",
-                        icon: MapPin
+                        icon: MapPin,
                       },
                       { href: "/faq", label: "সাধারণ প্রশ্ন", icon: Star },
-                      { href: "/contact", label: "যোগাযোগ", icon: Phone }
+                      { href: "/contact", label: "যোগাযোগ", icon: Phone },
                     ].map((item, index) => (
                       <motion.div
                         key={index}
@@ -1111,5 +1111,5 @@ export default function Navbar() {
         </AnimatePresence>
       </motion.header>
     </>
-  )
+  );
 }

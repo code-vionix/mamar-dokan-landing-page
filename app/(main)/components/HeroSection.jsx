@@ -5,25 +5,25 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 
 const HeroSection = () => {
-  const heroRef = useRef(null);
+  // const heroRef = useRef(null);
 
-  // Parallax effect for hero section
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      if (heroRef.current) {
-        heroRef.current.style.backgroundPositionY = `${scrollY * 0.5}px`;
-      }
-    };
+  // // Parallax effect for hero section
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     const scrollY = window.scrollY;
+  //     if (heroRef.current) {
+  //       heroRef.current.style.backgroundPositionY = `${scrollY * 0.5}px`;
+  //     }
+  //   };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
 
   return (
     <>
       <div
-        ref={heroRef}
+        // ref={heroRef}
         className="relative h-screen bg-cover bg-center bg-fixed flex items-center"
         style={{
           backgroundImage: 'url("/assets/hero-jamdani.jpg")',

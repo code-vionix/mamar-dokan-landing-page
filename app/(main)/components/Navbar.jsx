@@ -20,10 +20,12 @@ export default function Navbar() {
   const { data: session } = useSession();
   const pathname = usePathname();
 
+
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setSearchOpen(false);
   }, [pathname, setIsMobileMenuOpen, setSearchOpen]);
+
 
   return (
     <>

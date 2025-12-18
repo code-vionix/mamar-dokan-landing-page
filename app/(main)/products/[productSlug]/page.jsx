@@ -10,6 +10,8 @@ const producductsDetailspage = async ({ params, searchParams }) => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/slug/${productSlug}`
   );
+
+
   const data = await response.json();
   const product = data.data;
 
@@ -32,7 +34,7 @@ const producductsDetailspage = async ({ params, searchParams }) => {
       <div className="container mx-auto px-4 sm:px-6 py-8">
         <ProductDetails product={product} />
         <DetailsTab product={product} Tab={tab} />
-        <RelatedProducts />
+        <RelatedProducts product={product} />
       </div>
     </div>
   );

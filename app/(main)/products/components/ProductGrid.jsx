@@ -1,11 +1,18 @@
 import { useCart } from "@/lib/cart";
 import { motion } from "framer-motion";
-import { Heart, Percent, Plus, Search, ShoppingCart } from "lucide-react";
+import {
+  CheckCircle,
+  Heart,
+  Percent,
+  Plus,
+  Search,
+  ShoppingCart,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { toast } from "sonner";
 // import { set } from "react-hook-form";
 
@@ -18,7 +25,7 @@ const ProductGrid = ({
   setQuickViewProduct,
   setFavorites,
 }) => {
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const router = useRouter();
@@ -27,6 +34,14 @@ const ProductGrid = ({
     if (!salePrice) return 0;
     return Math.round(((price - salePrice) / price) * 100);
   };
+
+  const cartProducts = useMemo(() => {
+    return sortedProducts.filter((sp) =>
+      cartItems.some((ci) => ci.id === sp.id)
+    );
+  }, [sortedProducts, cartItems]);
+
+  console.log(cartProducts);
 
   // //  === Fetch Favorite on mount ====
 
@@ -223,16 +238,27 @@ const ProductGrid = ({
                   </div>
 
                   <div className="flex items-center mt-auto gap-2">
-                    <button
-                      onClick={() => {
-                        addToCart({...product, quantity: 1});
-                        toast.success("Product added in cart!")
-                      }}
-                      className="bg-amber-600 hover:bg-amber-700 active:scale-90 text-white px-3 py-2 rounded-md font-bengali flex items-center justify-center flex-1 transition-colors"
-                    >
-                      <ShoppingCart size={16} className="mr-1" />
-                      <span>কার্টে যোগ করুন</span>
-                    </button>
+                    <div >
+                      {cartProducts.some((cp) => cp.id === product.id) ? (
+                        <button
+                        className="cursor-pointer bg-amber-600 hover:bg-amber-700 active:scale-90 text-white px-3 py-2 rounded-md font-bengali flex items-center justify-center flex-1 transition-colors"
+                        >
+                          <CheckCircle className="h-5 w-5 mr-2" />
+                          <span>কার্টে যোগ করা হয়েছে</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            addToCart({ ...product, quantity: 1 });
+                            toast.success("Product added in cart!");
+                          }}
+                          className="cursor-pointer bg-amber-600 hover:bg-amber-700 active:scale-90 text-white px-3 py-2 rounded-md font-bengali flex items-center justify-center flex-1 transition-colors"
+                        >
+                          <ShoppingCart className="h-5 w-5 mr-2" />
+                          <span>কার্টে যোগ করুন</span>
+                        </button>
+                      )}
+                    </div>
 
                     <Link
                       href={`/products/${product.id}`}
